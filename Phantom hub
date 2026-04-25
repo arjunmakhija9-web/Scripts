@@ -69,14 +69,15 @@ task.spawn(function()local g="!@#$%^&*()?"while task.wait(math.random(3,6))do lo
 
 -- SEARCH BAR
 local cbF=m("Frame",{Size=UDim2.new(1,-30,0,35),Position=UDim2.new(0,15,0,60),BackgroundColor3=C.cd},mf)cr(cbF,8)st(cbF,C.p2,1)
-local cb=m("TextBox",{Size=UDim2.new(1,-10,1,0),Position=UDim2.new(0,10,0,0),BackgroundTransparency=1,Text="",PlaceholderText="[ Search Phantom Scripts... ]",TextColor3=C.cy,Font=Enum.Font.Code,TextSize=12},cbF)
+local cb=m("TextBox",{Size=UDim2.new(1,-10,1,0),Position=UDim2.new(0,10,0,0),BackgroundTransparency=1,Text="",PlaceholderText="[ Search Scripts... ]",TextColor3=C.cy,Font=Enum.Font.Code,TextSize=12},cbF)
 
 -- SCROLLING FRAME
 local sf=m("ScrollingFrame",{Size=UDim2.new(1,-20,1,-155),Position=UDim2.new(0,10,0,105),BackgroundTransparency=1,ScrollBarThickness=0,AutomaticCanvasSize=2},mf)
 m("UIListLayout",{Padding=UDim.new(0,6),SortOrder=0},sf)
 
--- DISCLAIMER NOTE
-m("TextLabel",{Size=UDim2.new(1,0,0,20),Position=UDim2.new(0,0,1,-20),BackgroundTransparency=1,Text="These scripts are not made by me [except Fling GUI]",TextColor3=Color3.fromRGB(150,150,150),TextSize=9,Font=3},mf)
+-- THE NOTE (FIXED AT BOTTOM)
+local noteLabel = m("TextLabel",{Size=UDim2.new(1,0,0,25),Position=UDim2.new(0,0,1,-25),BackgroundColor3=Color3.fromRGB(0,0,0),BackgroundTransparency=0.5,Text="These scripts are not made by me [except Fling GUI]",TextColor3=Color3.fromRGB(200,200,200),TextSize=10,Font=3,ZIndex=20},mf)
+st(noteLabel, Color3.fromRGB(50,50,50), 1)
 
 -- BUTTON LOGIC
 local scripts = {}
@@ -90,7 +91,7 @@ cb:GetPropertyChangedSignal("Text"):Connect(function()
     local q=cb.Text:lower() for _,v in pairs(sf:GetChildren())do if v:IsA("TextButton")then v.Visible=v.Name:lower():find(q)and true or false end end
 end)
 
--- ADD BUTTONS
+-- ADD BUTTONS (EXECUTE ALL IS FIRST)
 AddBtn("EXECUTE ALL", function() 
     Notify("PHANTOM", "Executing all raid scripts...", C.rd)
     for _,f in pairs(scripts) do task.spawn(f) end
@@ -101,7 +102,6 @@ AddBtn("Aura Animations", function() loadstring(game:HttpGet("https://rawscripts
 AddBtn("Ak Admin (UGC Emotes)", function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-33K-UGC-EMOTES-129432"))() Notify("LOADER", "Ak Admin Loaded", C.cy) end)
 AddBtn("Flames Hub", function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Flames-Hub-Games-Script-Hub-Loader-49619"))() Notify("LOADER", "Flames Hub Loaded", C.cy) end)
 AddBtn("Infinite Yield", function() loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))() Notify("LOADER", "IY Loaded", C.cy) end)
-AddBtn("Anti-AFK", function() local vU=game:GetService("VirtualUser") L.Idled:Connect(function() vU:CaptureController() vU:ClickButton2(Vector2.new()) end) Notify("PHANTOM", "Anti-AFK Active", C.gn) end, C.gn)
 
 -- TOGGLE
 local Tog=m("TextButton",{Size=UDim2.new(0,50,0,50),Position=UDim2.new(0,20,0,200),BackgroundColor3=C.bg,Text="PR",TextColor3=C.tx,Font=Enum.Font.Michroma,TextSize=16,ZIndex=100},sg)
