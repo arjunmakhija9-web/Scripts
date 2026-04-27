@@ -1,4 +1,4 @@
--- PHANTOM GLITCH ⚡ | Phantom Raiders (V5 - Fling All Edition)
+-- PHANTOM GLITCH ⚡ | Phantom Raiders (V6 - Anti-Self Fling Fixed)
 -- Developed by GG_gamerz002
 local P,T,U,R=game:GetService"Players",game:GetService"TweenService",game:GetService"UserInputService",game:GetService"RunService"
 local TS = game:GetService"TeleportService"
@@ -15,7 +15,7 @@ local function tw(o,t,p)local tw_obj=T:Create(o,TweenInfo.new(t,Enum.EasingStyle
 -- UI ROOT
 local sg=m("ScreenGui",{ResetOnSpawn=false,Name="PhantomFling",DisplayOrder=2000},game.CoreGui)
 
--- NOTIFICATION SYSTEM
+-- NOTIFICATION
 local function Notify(t,msg,co)
     task.spawn(function()
         local n=m("Frame",{Size=UDim2.new(0,300,0,80),Position=UDim2.new(1,30,1,-120),BackgroundColor3=C.bg,ZIndex=2000},sg)cr(n,12)st(n,co or C.p1,2.5,0)
@@ -25,25 +25,25 @@ local function Notify(t,msg,co)
     end)
 end
 
--- DRAGGING LOGIC
+-- DRAGGING
 local function dr(g)
     local d,s,p g.InputBegan:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then d,p,s=true,i.Position,g.Position end end)
     U.InputChanged:Connect(function(i) if d and(i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch)then local e=i.Position-p g.Position=UDim2.new(s.X.Scale,s.X.Offset+e.X,s.Y.Scale,s.Y.Offset+e.Y)end end)
     U.InputEnded:Connect(function(i) d=false end)
 end
 
--- MAIN GUI FRAME
-local mf=m("Frame",{Size=UDim2.new(0,400,0,440),Position=UDim2.new(.5,-200,.5,-220),BackgroundColor3=C.bg,ClipsDescendants=true,Visible=false,ZIndex=10},sg)
+-- MAIN GUI
+local mf=m("Frame",{Size=UDim2.new(0,400,0,420),Position=UDim2.new(.5,-200,.5,-210),BackgroundColor3=C.bg,ClipsDescendants=true,Visible=false,ZIndex=10},sg)
 cr(mf,18)local brd=st(mf,C.p1,3,0)local gr=m("UIGradient",{Color=ColorSequence.new(C.p1,C.p2)},brd)
 task.spawn(function()while task.wait()do gr.Rotation=gr.Rotation+3 end end)
 dr(mf)
 
 m("TextLabel",{Size=UDim2.new(1,0,0,30),Position=UDim2.new(0,18,0,8),BackgroundTransparency=1,Text="PHANTOM GLITCH ⚡",TextColor3=C.tx,TextSize=18,Font=Enum.Font.Michroma,TextXAlignment=0,ZIndex=16},mf)
 
--- TAB SYSTEM
+-- TABS & PAGES
 local TabHolder = m("Frame",{Size=UDim2.new(1,-30,0,35),Position=UDim2.new(0,15,0,45),BackgroundTransparency=1,ZIndex=20},mf)
 local btnPlr = m("TextButton",{Size=UDim2.new(0.5,-5,1,0),Position=UDim2.new(0,0,0,0),BackgroundColor3=C.cd,Text="PLAYERS",TextColor3=C.p1,Font=Enum.Font.Michroma,TextSize=10,ZIndex=21},TabHolder)cr(btnPlr,8)st(btnPlr,C.p1,1)
-local btnTools = m("TextButton",{Size=UDim2.new(0.5, -5, 1, 0), Position=UDim2.new(0.5, 5, 0, 0), BackgroundColor3=C.cd, Text="TOOLS", TextColor3=C.tx, Font=Enum.Font.Michroma, TextSize=10, ZIndex=21},TabHolder)cr(btnTools,8)st(btnTools,C.p1,1)
+local btnTools = m("TextButton",{Size=UDim2.new(0.5,5,1,0),Position=UDim2.new(0.5,5,0,0),BackgroundColor3=C.cd,Text="TOOLS",TextColor3=C.tx,Font=Enum.Font.Michroma,TextSize=10,ZIndex=21},TabHolder)cr(btnTools,8)st(btnTools,C.p1,1)
 
 local PlayerPage = m("Frame",{Size=UDim2.new(1,0,1,-90),Position=UDim2.new(0,0,0,90),BackgroundTransparency=1,Visible=true},mf)
 local ToolsPage = m("Frame",{Size=UDim2.new(1,0,1,-90),Position=UDim2.new(0,0,0,90),BackgroundTransparency=1,Visible=false},mf)
@@ -51,76 +51,107 @@ local ToolsPage = m("Frame",{Size=UDim2.new(1,0,1,-90),Position=UDim2.new(0,0,0,
 btnPlr.MouseButton1Click:Connect(function() PlayerPage.Visible=true ToolsPage.Visible=false btnPlr.TextColor3=C.p1 btnTools.TextColor3=C.tx end)
 btnTools.MouseButton1Click:Connect(function() PlayerPage.Visible=false ToolsPage.Visible=true btnTools.TextColor3=C.p1 btnPlr.TextColor3=C.tx end)
 
--- SEARCH BAR
+-- SEARCH
 local sb_f = m("Frame",{Size=UDim2.new(1,-30,0,30),Position=UDim2.new(0,15,0,5),BackgroundColor3=C.cd,ZIndex=22},PlayerPage)cr(sb_f,6)st(sb_f,C.p1,1,.5)
-local sb = m("TextBox",{Size=UDim2.new(1,-10,1,0),Position=UDim2.new(0,10,0,0),BackgroundTransparency=1,Text="",PlaceholderText="Raider dhundo...",TextColor3=C.tx,PlaceholderColor3=Color3.fromRGB(100,100,100),TextSize=11,Font=3,TextXAlignment=0,ZIndex=23},sb_f)
+local sb = m("TextBox",{Size=UDim2.new(1,-10,1,0),Position=UDim2.new(0,10,0,0),BackgroundTransparency=1,Text="",PlaceholderText="Username likho...",TextColor3=C.tx,PlaceholderColor3=Color3.fromRGB(100,100,100),TextSize=11,Font=3,TextXAlignment=0,ZIndex=23},sb_f)
 
 -- PLAYER LIST
 local sf = m("ScrollingFrame",{Size=UDim2.new(1,-20,1,-50),Position=UDim2.new(0,10,0,45),BackgroundTransparency=1,ScrollBarThickness=0,CanvasSize=UDim2.new(0,0,0,0),AutomaticCanvasSize="Y",ZIndex=22},PlayerPage)
 m("UIListLayout",{Padding=UDim.new(0,8),SortOrder="LayoutOrder"},sf)
 
--- TOOLS PAGE CONTENT
+-- TOOLS GRID
 local toolGrid = m("Frame",{Size=UDim2.new(1,-20,1,-10),Position=UDim2.new(0,10,0,5),BackgroundTransparency=1},ToolsPage)
 m("UIGridLayout",{CellSize=UDim2.new(0,175,0,45),CellPadding=UDim2.new(0,10,0,10)},toolGrid)
 
-local function AddTool(name, call)
-    local b = m("TextButton",{BackgroundColor3=C.cd,Text=name,TextColor3=C.tx,Font=Enum.Font.Michroma,TextSize=10},toolGrid)
-    cr(b,8)st(b,C.p2,1) b.MouseButton1Click:Connect(call)
-end
-
--- FLING ENGINE (CORE)
+-- 🛠️ FIXED FLING ENGINE (ANTI-SELF FLING)
 local function Fling(TargetPlr, silent)
     if TargetPlr.Name == "GG_gamerz002" then 
-        if not silent then Notify("ACCESS DENIED", "Bhai ko touch nahi karne ka!", C.rd) end
+        if not silent then Notify("ACCESS DENIED", "Bhai ko fling mat kar!", C.rd) end
         return 
     end
 
     local Char = L.Character
-    local TChar = TargetPlr.Character
     local Hum = Char and Char:FindFirstChildOfClass("Humanoid")
     local Root = Char and Char:FindFirstChild("HumanoidRootPart")
+    local TChar = TargetPlr.Character
     local TRoot = TChar and TChar:FindFirstChild("HumanoidRootPart")
-    if not Root or not TRoot then return end
     
-    if not silent then Notify("PHANTOM FLING", "Uda raha hu: "..TargetPlr.DisplayName, C.rd) end
+    if not Root or not TRoot or not Hum then return end
+    
+    -- SAVE REST POSITION
+    local OldCF = Root.CFrame
+    if not silent then Notify("PHANTOM FLING", "Target: "..TargetPlr.DisplayName, C.rd) end
+    
+    -- PHYSICS PROTECTION
     Hum.PlatformStand = true
+    Hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+    
     local noclip = R.Stepped:Connect(function()
-        for _, v in pairs(Char:GetDescendants()) do if v:IsA("BasePart") then v.CanCollide = false end end
+        for _, v in pairs(Char:GetDescendants()) do 
+            if v:IsA("BasePart") then v.CanCollide = false end 
+        end
     end)
     
+    -- FLING LOOP
     local start = tick()
-    while tick() - start < 1.5 do -- Fling All ke liye timing thodi kam rakhi hai speed ke liye
-        if not TRoot or not Root then break end
-        Root.Velocity = Vector3.new(900000, 900000, 900000)
-        Root.RotVelocity = Vector3.new(0, 900000, 0)
-        local wave = math.sin((tick() - start) * 35) * 1
+    local duration = silent and 2 or 3 -- Fling all ke liye thoda fast
+    
+    while tick() - start < duration do
+        if not TRoot or not Root or not L.Character then break end
+        
+        -- Apply massive velocity to FLING target
+        Root.Velocity = Vector3.new(500000, 500000, 500000)
+        Root.RotVelocity = Vector3.new(0, 500000, 0)
+        
+        -- Tight oscillation (1 stud)
+        local wave = math.sin((tick() - start) * 45) * 1
         Root.CFrame = TRoot.CFrame * CFrame.new(0, 0, wave)
+        
         R.Heartbeat:Wait()
     end
+    
+    -- 🛑 RESTORATION (Return to safe position)
     noclip:Disconnect()
-    Root.Velocity, Root.RotVelocity = Vector3.new(0,0,0), Vector3.new(0,0,0)
+    
+    -- Reset momentum before TP back
+    Root.Velocity = Vector3.new(0, 0, 0)
+    Root.RotVelocity = Vector3.new(0, 0, 0)
+    
+    -- Small delay to let physics settle
+    task.wait(0.1)
+    
+    Root.CFrame = OldCF
     Hum.PlatformStand = false
+    Hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
+    
+    if not silent then Notify("SUCCESS", "Purani jagah wapas aa gaye.", C.gn) end
 end
 
--- FLING ALL LOGIC
-local function FlingAll()
-    local oldPos = L.Character.HumanoidRootPart.CFrame
-    Notify("MASS ATTACK", "Sabka band bajne wala hai!", C.rd)
-    for _, p in pairs(P:GetPlayers()) do
-        if p ~= L and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+-- TOOLS CONTENT
+local function AddTool(name, color, call)
+    local b = m("TextButton",{BackgroundColor3=C.cd,Text=name,TextColor3=color or C.tx,Font=Enum.Font.Michroma,TextSize=10},toolGrid)
+    cr(b,8)st(b,color or C.p2,1) b.MouseButton1Click:Connect(call)
+end
+
+AddTool("FLING ALL", C.rd, function()
+    Notify("MASS PURGE", "Pure server ko uda raha hu...", C.rd)
+    local players = P:GetPlayers()
+    for _, p in pairs(players) do
+        if p ~= L and p.Name ~= "GG_gamerz002" then
             Fling(p, true)
+            task.wait(0.1)
         end
     end
-    L.Character.HumanoidRootPart.CFrame = oldPos
-    Notify("FINISHED", "Server saaf ho gaya bhai!", C.gn)
-end
+    Notify("COMPLETE", "Sab saaf ho gaye!", C.gn)
+end)
 
--- ADDING TOOLS
-AddTool("FLING ALL", FlingAll)
-AddTool("REJOIN", function() TS:TeleportToPlaceInstance(game.PlaceId, game.JobId, L) end)
-AddTool("SERVER HOP", function() Notify("SERVER", "Naya server dhund raha hu...", C.cy) end)
-AddTool("ANTI-AFK", function() L.Idled:Connect(function() game:GetService("VirtualUser"):Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame) task.wait(1) game:GetService("VirtualUser"):Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame) end) Notify("ANTI-AFK", "Ab tum AFK nahi hoge.", C.gn) end)
-AddTool("RESET", function() if L.Character then L.Character:BreakJoints() end end)
+AddTool("REJOIN", C.tx, function() TS:TeleportToPlaceInstance(game.PlaceId, game.JobId, L) end)
+AddTool("SERVER HOP", C.cy, function() Notify("SERVER", "Searching...", C.cy) end)
+AddTool("ANTI-AFK", C.gn, function() 
+    L.Idled:Connect(function() game:GetService("VirtualUser"):Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame) task.wait(1) game:GetService("VirtualUser"):Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame) end) 
+    Notify("ANTI-AFK", "Enabled.", C.gn) 
+end)
+AddTool("RESET", C.rd, function() if L.Character then L.Character:BreakJoints() end end)
 
 -- PLAYER REFRESH
 local function Refresh()
@@ -129,10 +160,10 @@ local function Refresh()
         if p ~= L then
             local f = m("Frame",{Size=UDim2.new(1,-5,0,70),BackgroundColor3=C.cd,ZIndex=25,Name=p.Name:lower()},sf)cr(f,10)st(f,C.p2,1,.6)
             local dname = m("TextLabel",{Size=UDim2.new(.5,0,0,20),Position=UDim2.new(0,12,0,15),BackgroundTransparency=1,Text=p.DisplayName,TextColor3=C.tx,Font=Enum.Font.Michroma,TextSize=10,TextXAlignment=0,ZIndex=26},f)
+            
             if p.Name == "GG_gamerz002" then
                 m("TextLabel",{Size=UDim2.new(0,100,0,20),Position=UDim2.new(0,12,0,45),BackgroundTransparency=1,Text="[OWNER]",TextColor3=C.p1,Font=Enum.Font.Michroma,TextSize=9,TextXAlignment=0,ZIndex=26},f)
-                st(f, C.p1, 2)
-                dname.TextColor3 = C.p1
+                st(f, C.p1, 2) dname.TextColor3 = C.p1
             end
             m("TextLabel",{Size=UDim2.new(.5,0,0,15),Position=UDim2.new(0,12,0,32),BackgroundTransparency=1,Text="@"..p.Name,TextColor3=Color3.fromRGB(150,150,150),Font=3,TextSize=10,TextXAlignment=0,ZIndex=26},f)
 
@@ -140,7 +171,7 @@ local function Refresh()
             local tp = m("TextButton",{Size=UDim2.new(0,42,0,38),Position=UDim2.new(1,-112,0.5,-19),BackgroundColor3=C.bg,Text="TP",TextColor3=C.gn,Font=3,TextSize=10,ZIndex=28},f)cr(tp,6)st(tp,C.gn,1)
             local cp = m("TextButton",{Size=UDim2.new(0,42,0,38),Position=UDim2.new(1,-159,0.5,-19),BackgroundColor3=C.bg,Text="CPY",TextColor3=C.cy,Font=3,TextSize=10,ZIndex=28},f)cr(cp,6)st(cp,C.cy,1)
 
-            fl.MouseButton1Click:Connect(function() Fling(p, false) end)
+            fl.MouseButton1Click:Connect(function() Fling(p) end)
             tp.MouseButton1Click:Connect(function() if L.Character and p.Character then L.Character.HumanoidRootPart.CFrame = p.Character.HumanoidRootPart.CFrame end end)
             cp.MouseButton1Click:Connect(function() pcall(function() setclipboard(p.Name) end) Notify("COPIED", p.Name, C.cy) end)
         end
@@ -154,19 +185,13 @@ end)
 
 P.PlayerAdded:Connect(Refresh) P.PlayerRemoving:Connect(Refresh) Refresh()
 
--- TOGGLE BUTTON (FG)
+-- TOGGLE
 local Tog=m("TextButton",{Size=UDim2.new(0,55,0,55),Position=UDim2.new(0,20,0,200),BackgroundColor3=C.bg,Text="FG",TextColor3=C.tx,Font=Enum.Font.Michroma,TextSize=18,ZIndex=500,Visible=false},sg)
 cr(Tog,28)st(Tog,C.p1,3,0)dr(Tog)
 Tog.MouseButton1Click:Connect(function() mf.Visible = not mf.Visible end)
 
--- CINEMATIC LOADING
+-- LOADING
 task.spawn(function()
     local LF = m("Frame",{Size=UDim2.new(1,0,1,0),BackgroundColor3=Color3.new(0,0,0),ZIndex=5000},sg)
-    local PBarHold = m("Frame",{Size=UDim2.new(0,250,0,3),Position=UDim2.new(0.5,-125,0.6,0),BackgroundColor3=C.cd,ZIndex=5001},LF)cr(PBarHold,2)
-    local PBar = m("Frame",{Size=UDim2.new(0,0,1,0),BackgroundColor3=C.p1,ZIndex=5002},PBarHold)
-    tw(PBar, 1.5, {Size=UDim2.new(1,0,1,0)})
-    task.wait(1.6)
-    tw(LF, 0.5, {BackgroundTransparency = 1})
-    task.wait(0.6)
-    LF:Destroy() mf.Visible, Tog.Visible = true, true
+    task.wait(1) tw(LF, 0.5, {BackgroundTransparency = 1}) task.wait(0.6) LF:Destroy() mf.Visible, Tog.Visible = true, true
 end)
