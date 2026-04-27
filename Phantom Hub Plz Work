@@ -1,94 +1,88 @@
--- PHANTOM HUB ⚡ | Phantom Raiders (Personalized Edition)
+-- PHANTOM HUB ⚡ | Phantom Raiders (Personalized Overdrive)
 -- Developed by GG_gamerz002
 local MembersURL = "https://raw.githubusercontent.com/arjunmakhija9-web/Scripts/refs/heads/main/Members"
 
 local P,T,U,R=game:GetService"Players",game:GetService"TweenService",game:GetService"UserInputService",game:GetService"RunService"
 local L = P.LocalPlayer
-local DN = L.DisplayName
-local UN = L.Name
+local DN, UN, ID = L.DisplayName, L.Name, L.UserId
 
--- THEME
-local C={p1=Color3.fromRGB(255,0,0),p2=Color3.fromRGB(0,100,255),bg=Color3.fromRGB(5,5,10),cd=Color3.fromRGB(15,15,25),tx=Color3.fromRGB(255,255,255),cy=Color3.fromRGB(0,255,255),rd=Color3.fromRGB(255,0,0),gn=Color3.fromRGB(0,255,140)}
+-- THEME PALETTE
+local C={p1=Color3.fromRGB(255,0,0),p2=Color3.fromRGB(0,100,255),bg=Color3.fromRGB(8,8,12),cd=Color3.fromRGB(15,15,25),tx=Color3.fromRGB(255,255,255),cy=Color3.fromRGB(0,255,255),rd=Color3.fromRGB(255,0,0),gn=Color3.fromRGB(0,255,140)}
 local function m(c,p,r)local i=Instance.new(c)for k,v in pairs(p)do i[k]=v end i.Parent=r return i end
 local function cr(p,r)m("UICorner",{CornerRadius=UDim.new(0,r)},p)end
-local function st(p,c,t,r)m("UIStroke",{Color=c,Thickness=t or 1.2,Transparency=r or.2,ApplyStrokeMode="Border"},p)end
-local function tw(o,t,p)local t=T:Create(o,TweenInfo.new(t,Enum.EasingStyle.Quint),p)t:Play()return t end
+local function st(p,c,t,r)m("UIStroke",{Color=c,Thickness=t or 1.2,Transparency=r or.3,ApplyStrokeMode="Border"},p)end
+local function tw(o,t,p)local tw_obj=T:Create(o,TweenInfo.new(t,Enum.EasingStyle.Quint),p)tw_obj:Play()return tw_obj end
 
 -- UI ROOT
-local sg=m("ScreenGui",{ResetOnSpawn=false,Name="PhantomHub",DisplayOrder=100},game.CoreGui)
+local sg=m("ScreenGui",{ResetOnSpawn=false,Name="PhantomHub",DisplayOrder=1000},game.CoreGui)
 
--- BIGGER NOTIFICATIONS
+-- BIG NOTIFICATIONS
 local function Notify(t,msg,co)
     task.spawn(function()
-        local n=m("Frame",{Size=UDim2.new(0,280,0,75),Position=UDim2.new(1,30,1,-100),BackgroundColor3=C.bg,ZIndex=1000},sg)cr(n,10)st(n,co or C.p1,2.5,0)
-        m("TextLabel",{Size=UDim2.new(1,0,0,30),Position=UDim2.new(0,10,0,8),BackgroundTransparency=1,Text=t,TextColor3=co or C.p1,Font=Enum.Font.Michroma,TextSize=12,TextXAlignment=0,ZIndex=1001},n)
-        m("TextLabel",{Size=UDim2.new(1,0,0,30),Position=UDim2.new(0,10,0,35),BackgroundTransparency=1,Text=msg,TextColor3=C.tx,Font=3,TextSize=11,TextXAlignment=0,ZIndex=1001},n)
-        tw(n,.5,{Position=UDim2.new(1,-300,1,-100)})task.wait(3)tw(n,.5,{Position=UDim2.new(1,30,1,-100)})task.wait(.5)n:Destroy()
+        local n=m("Frame",{Size=UDim2.new(0,300,0,80),Position=UDim2.new(1,30,1,-120),BackgroundColor3=C.bg,ZIndex=2000},sg)cr(n,12)st(n,co or C.p1,3,0)
+        m("TextLabel",{Size=UDim2.new(1,0,0,35),Position=UDim2.new(0,15,0,8),BackgroundTransparency=1,Text=t,TextColor3=co or C.p1,Font=Enum.Font.Michroma,TextSize=14,TextXAlignment=0,ZIndex=2002},n)
+        m("TextLabel",{Size=UDim2.new(1,0,0,30),Position=UDim2.new(0,15,0,40),BackgroundTransparency=1,Text=msg,TextColor3=C.tx,Font=3,TextSize=11,TextXAlignment=0,ZIndex=2002},n)
+        tw(n,.5,{Position=UDim2.new(1,-320,1,-120)})task.wait(3.5)tw(n,.5,{Position=UDim2.new(1,30,1,-120)})task.wait(.5)n:Destroy()
     end)
 end
 
--- DRAGGING
+-- MOBILE DRAGGING
 local function makeDraggable(gui)
-    local d,s,p
-    gui.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then d,p,s=true,i.Position,gui.Position end end)
-    U.InputChanged:Connect(function(i) if d and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then local e=i.Position-p gui.Position=UDim2.new(s.X.Scale,s.X.Offset+e.X,s.Y.Scale,s.Y.Offset+e.Y) end end)
+    local d,s,p gui.InputBegan:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then d,p,s=true,i.Position,gui.Position end end)
+    U.InputChanged:Connect(function(i) if d and(i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch)then local e=i.Position-p gui.Position=UDim2.new(s.X.Scale,s.X.Offset+e.X,s.Y.Scale,s.Y.Offset+e.Y)end end)
     U.InputEnded:Connect(function(i) d=false end)
 end
 
 -- MAIN HUB
 local mf=m("Frame",{Size=UDim2.new(0,350,0,340),Position=UDim2.new(.5,-175,.5,-170),BackgroundColor3=C.bg,ClipsDescendants=true,Visible=false,ZIndex=10},sg)
-cr(mf,16)local brd=st(mf,C.p1,2.5,0)local gr=m("UIGradient",{Color=ColorSequence.new(C.p1,C.p2)},brd)
+cr(mf,18)local brd=st(mf,C.p1,3,0)local gr=m("UIGradient",{Color=ColorSequence.new(C.p1,C.p2)},brd)
 task.spawn(function()while task.wait()do gr.Rotation=gr.Rotation+3 end end)
 makeDraggable(mf)
 
--- HEADER
-local hd=m("Frame",{Size=UDim2.new(1,0,0,50),BackgroundTransparency=1,ZIndex=15},mf)
-m("TextLabel",{Size=UDim2.new(1,0,0,30),Position=UDim2.new(0,15,0,5),BackgroundTransparency=1,Text="PHANTOM HUB ⚡",TextColor3=C.tx,TextSize=18,Font=Enum.Font.Michroma,TextXAlignment=0,ZIndex=16},hd)
-local stl=m("TextLabel",{Size=UDim2.new(1,0,0,10),Position=UDim2.new(0,16,0,32),BackgroundTransparency=1,Text="by GG_gamerz002 | Phantom Raiders",TextSize=10,Font=3,TextXAlignment=0,ZIndex=16},hd)
-task.spawn(function()local h=0 while task.wait(.02)do h=(h+1)%360 stl.TextColor3=Color3.fromHSV(h/360,1,1) end end)
+-- HEADER & TABS
+m("TextLabel",{Size=UDim2.new(1,0,0,30),Position=UDim2.new(0,18,0,8),BackgroundTransparency=1,Text="PHANTOM HUB ⚡",TextColor3=C.tx,TextSize=18,Font=Enum.Font.Michroma,TextXAlignment=0,ZIndex=16},mf)
+local stl=m("TextLabel",{Size=UDim2.new(1,0,0,10),Position=UDim2.new(0,19,0,36),BackgroundTransparency=1,Text="by GG_gamerz002 | Phantom Raiders",TextSize=10,Font=3,TextXAlignment=0,ZIndex=16},mf)
+task.spawn(function()local h=0 while task.wait(.02)do h=(h+1)%360 stl.TextColor3=Color3.fromHSV(h/360,1,1)end end)
 
--- TABS
-local nav=m("Frame",{Size=UDim2.new(1,0,0,30),Position=UDim2.new(0,0,0,50),BackgroundTransparency=1,ZIndex=15},mf)
-local sbtn=m("TextButton",{Size=UDim2.new(.5,0,1,0),BackgroundTransparency=1,Text="SCRIPTS",TextColor3=C.p1,Font=3,TextSize=13,ZIndex=16},nav)
-local kbtn=m("TextButton",{Size=UDim2.new(.5,0,1,0),Position=UDim2.new(.5,0,0,0),BackgroundTransparency=1,Text="KEYS",TextColor3=C.tx,Font=3,TextSize=13,ZIndex=16},nav)
-local bar=m("Frame",{Size=UDim2.new(.5,-20,0,2),Position=UDim2.new(0,10,1,0),BackgroundColor3=C.p1,ZIndex=17},nav)
+local nav=m("Frame",{Size=UDim2.new(1,0,0,30),Position=UDim2.new(0,0,0,52),BackgroundTransparency=1,ZIndex=15},mf)
+local sbtn=m("TextButton",{Size=UDim2.new(.5,0,1,0),BackgroundTransparency=1,Text="SCRIPTS",TextColor3=C.p1,Font=3,TextSize=14,ZIndex=16},nav)
+local kbtn=m("TextButton",{Size=UDim2.new(.5,0,1,0),Position=UDim2.new(.5,0,0,0),BackgroundTransparency=1,Text="KEYS",TextColor3=C.tx,Font=3,TextSize=14,ZIndex=16},nav)
+local bar=m("Frame",{Size=UDim2.new(.5,-30,0,2),Position=UDim2.new(0,15,1,0),BackgroundColor3=C.p1,ZIndex=17},nav)
 
--- SCROLLING
-local sP=m("ScrollingFrame",{Size=UDim2.new(1,-20,1,-120),Position=UDim2.new(0,10,0,85),BackgroundTransparency=1,ScrollBarThickness=0,AutomaticCanvasSize=2,Visible=true,ZIndex=20},mf)
-m("UIListLayout",{Padding=UDim.new(0,8),SortOrder=Enum.SortOrder.LayoutOrder},sP)
-local kP=m("ScrollingFrame",{Size=UDim2.new(1,-20,1,-120),Position=UDim2.new(0,10,0,85),BackgroundTransparency=1,ScrollBarThickness=0,AutomaticCanvasSize=2,Visible=false,ZIndex=20},mf)
-m("UIListLayout",{Padding=UDim.new(0,8)},kP)
+local sP=m("ScrollingFrame",{Size=UDim2.new(1,-20,1,-125),Position=UDim2.new(0,10,0,95),BackgroundTransparency=1,ScrollBarThickness=0,AutomaticCanvasSize=2,Visible=true,ZIndex=20},mf)
+m("UIListLayout",{Padding=UDim.new(0,10),SortOrder=0},sP)
+local kP=m("ScrollingFrame",{Size=UDim2.new(1,-20,1,-125),Position=UDim2.new(0,10,0,95),BackgroundTransparency=1,ScrollBarThickness=0,AutomaticCanvasSize=2,Visible=false,ZIndex=20},mf)
+m("UIListLayout",{Padding=UDim.new(0,10)},kP)
 
-sbtn.MouseButton1Click:Connect(function() sP.Visible,kP.Visible=true,false tw(bar,.3,{Position=UDim2.new(0,10,1,0)}) sbtn.TextColor3,kbtn.TextColor3=C.p1,C.tx end)
-kbtn.MouseButton1Click:Connect(function() sP.Visible,kP.Visible=false,true tw(bar,.3,{Position=UDim2.new(.5,10,1,0)}) kbtn.TextColor3,sbtn.TextColor3=C.p1,C.tx end)
+sbtn.MouseButton1Click:Connect(function() sP.Visible,kP.Visible=true,false tw(bar,.3,{Position=UDim2.new(0,15,1,0)}) sbtn.TextColor3,kbtn.TextColor3=C.p1,C.tx end)
+kbtn.MouseButton1Click:Connect(function() sP.Visible,kP.Visible=false,true tw(bar,.3,{Position=UDim2.new(.5,15,1,0)}) kbtn.TextColor3,sbtn.TextColor3=C.p1,C.tx end)
 
--- NOTE
-m("TextLabel",{Size=UDim2.new(1,0,0,25),Position=UDim2.new(0,0,1,-25),BackgroundColor3=C.bg,BackgroundTransparency=.2,Text="These scripts are not made by me [except Fling GUI]",TextColor3=Color3.fromRGB(150,150,150),TextSize=9,Font=3,ZIndex=30},mf)
+-- THE NOTE
+m("TextLabel",{Size=UDim2.new(1,0,0,25),Position=UDim2.new(0,0,1,-25),BackgroundColor3=Color3.new(0,0,0),BackgroundTransparency=.6,Text="These scripts are not made by me [except Fling GUI]",TextColor3=Color3.fromRGB(150,150,150),TextSize=9,Font=3,ZIndex=30},mf)
 
--- BUILDERS
+-- BUTTON BUILDERS
 local scripts_to_exec = {}
 local function AddScript(t,f,co,first)
-    local b=m("TextButton",{Name=t,Size=UDim2.new(1,0,0,38),BackgroundColor3=C.cd,Text="  "..t,TextColor3=co or C.tx,Font=3,TextSize=12,TextXAlignment=0,ZIndex=25,LayoutOrder=first and -1 or 1},sP)
-    cr(b,10)st(b,co or Color3.fromRGB(50,50,70),1,0)
+    local b=m("TextButton",{Name=t,Size=UDim2.new(1,0,0,40),BackgroundColor3=C.cd,Text="  "..t,TextColor3=co or C.tx,Font=3,TextSize=12,TextXAlignment=0,ZIndex=25,LayoutOrder=first and -100 or 1},sP)cr(b,10)st(b,co or Color3.fromRGB(50,50,70),1)
     if first then
-        local g=m("UIGradient",{Color=ColorSequence.new(C.rd,Color3.fromRGB(80,0,0))},b)
-        task.spawn(function() while task.wait() do g.Rotation=g.Rotation+4 end end)
+        local g=m("UIGradient",{Color=ColorSequence.new(C.rd,Color3.fromRGB(100,0,0))},b)
+        task.spawn(function() while task.wait() do g.Rotation=g.Rotation+5 end end)
     end
     b.MouseButton1Click:Connect(f)
     if not first then table.insert(scripts_to_exec, f) end
 end
 
 local function AddKey(n,k)
-    local f=m("Frame",{Size=UDim2.new(1,0,0,45),BackgroundColor3=C.cd,ZIndex=25},kP)cr(f,10)st(f,C.p2,1,0)
-    m("TextLabel",{Size=UDim2.new(.7,0,1,0),Position=UDim2.new(0,12,0,0),BackgroundTransparency=1,Text=n..": "..k,TextColor3=C.tx,Font=Enum.Font.Code,TextSize=11,TextXAlignment=0,ZIndex=26},f)
-    local cp=m("TextButton",{Size=UDim2.new(0,50,0,30),Position=UDim2.new(1,-62,.5,-15),BackgroundColor3=C.bg,Text="📋",TextColor3=C.cy,Font=3,TextSize=14,ZIndex=27},f)cr(cp,8)st(cp,C.cy,1,0)
-    cp.MouseButton1Click:Connect(function() setclipboard(k) Notify("SYSTEM","Key Copied to Clipboard",C.cy) end)
+    local f=m("Frame",{Size=UDim2.new(1,0,0,48),BackgroundColor3=C.cd,ZIndex=25},kP)cr(f,10)st(f,C.p2,1)
+    m("TextLabel",{Size=UDim2.new(.7,0,1,0),Position=UDim2.new(0,15,0,0),BackgroundTransparency=1,Text=n..": "..k,TextColor3=C.tx,Font=Enum.Font.Code,TextSize=12,TextXAlignment=0,ZIndex=26},f)
+    local cp=m("TextButton",{Size=UDim2.new(0,60,0,32),Position=UDim2.new(1,-75,.5,-16),BackgroundColor3=C.bg,Text="📋",TextColor3=C.cy,Font=3,TextSize=16,ZIndex=27},f)cr(cp,8)st(cp,C.cy,1)
+    cp.MouseButton1Click:Connect(function() setclipboard(k) Notify("SYSTEM","Key Copied!",C.cy) end)
 end
 
 -- POPULATE
-AddScript("EXECUTE ALL SCRIPTS", function() Notify("PHANTOM","Initializing Mass Execution...",C.p1) for _,f in pairs(scripts_to_exec)do task.spawn(f)end end, C.rd, true)
-AddScript("Fearless Chat Bypass", function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Fearless-Chat-Bypass-101789"))() Notify("LOADER","Chat Bypass Online",C.cy) end)
-AddScript("Fling GUI (By Arjun)", function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Fling-GUI-by-Arjun-145854"))() Notify("LOADER","Fling GUI Online",C.cy) end)
+AddScript("EXECUTE ALL SCRIPTS", function() Notify("OVERDRIVE","Injecting all payloads...",C.rd) for _,f in pairs(scripts_to_exec) do task.spawn(f) task.wait(0.1) end end, C.rd, true)
+AddScript("Fling GUI (By Arjun)", function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Fling-GUI-by-Arjun-145854"))() end)
+AddScript("Fearless Chat Bypass", function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Fearless-Chat-Bypass-101789"))() end)
 AddScript("Aura Animations", function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Aura-ANIMATIONS-script-75014"))() end)
 AddScript("Ak Admin (UGC Emotes)", function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-33K-UGC-EMOTES-129432"))() end)
 AddScript("Flames Hub Loader", function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Flames-Hub-Games-Script-Hub-Loader-49619"))() end)
@@ -100,50 +94,54 @@ local Tog=m("TextButton",{Size=UDim2.new(0,55,0,55),Position=UDim2.new(0,20,0,20
 cr(Tog,28)st(Tog,C.p1,3,0)makeDraggable(Tog)
 Tog.MouseButton1Click:Connect(function() mf.Visible = not mf.Visible end)
 
--- DRAMATIC PERSONALIZED LOADING
+-- CINEMATIC LOADING (PERSONALIZED LINES BACK)
 task.spawn(function()
     local LF = m("Frame",{Size=UDim2.new(1,0,1,0),BackgroundColor3=Color3.new(0,0,0),ZIndex=5000},sg)
-    local LTitle = m("TextLabel",{Size=UDim2.new(1,0,0,50),Position=UDim2.new(0,0,0.4,0),BackgroundTransparency=1,Text="PHANTOM HUB LOADING",TextColor3=C.p1,Font=Enum.Font.Michroma,TextSize=22,ZIndex=5001},LF)
-    local LStatus = m("TextLabel",{Size=UDim2.new(1,0,0,30),Position=UDim2.new(0,0,0.5,0),BackgroundTransparency=1,Text="INITIALIZING...",TextColor3=C.tx,Font=Enum.Font.Code,TextSize=13,ZIndex=5001},LF)
-    local PBarHold = m("Frame",{Size=UDim2.new(0,300,0,4),Position=UDim2.new(0.5,-150,0.5,40),BackgroundColor3=C.cd,ZIndex=5001},LF)cr(PBarHold,2)
+    local Pfp = m("ImageLabel",{Size=UDim2.new(0,80,0,80),Position=UDim2.new(0.5,-40,0.3,0),BackgroundColor3=C.cd,Image="rbxthumb://type=AvatarHeadShot&id="..ID.."&w=150&h=150",ZIndex=5001},LF)cr(Pfp,40)st(Pfp,C.p1,2,0)
+    local LTitle = m("TextLabel",{Size=UDim2.new(1,0,0,50),Position=UDim2.new(0,0,0.45,0),BackgroundTransparency=1,Text="SCANNING PHANTOM IDENTITY",TextColor3=C.p1,Font=Enum.Font.Michroma,TextSize=18,ZIndex=5001},LF)
+    local LStatus = m("TextLabel",{Size=UDim2.new(1,0,0,30),Position=UDim2.new(0,0,0.52,0),BackgroundTransparency=1,Text="INITIALIZING...",TextColor3=C.tx,Font=Enum.Font.Code,TextSize=13,ZIndex=5001},LF)
+    local PBarHold = m("Frame",{Size=UDim2.new(0,250,0,3),Position=UDim2.new(0.5,-125,0.6,0),BackgroundColor3=C.cd,ZIndex=5001},LF)cr(PBarHold,2)
     local PBar = m("Frame",{Size=UDim2.new(0,0,1,0),BackgroundColor3=C.p1,ZIndex=5002},PBarHold)
 
-    local logs = {
-        "FOUND USER: "..DN.." (@"..UN..")",
-        "SYNCING WITH PHANTOM DATABASE...",
-        "VERIFYING STATUS FOR: "..DN,
-        "SCANNING WHITELIST PROTOCOLS...",
-        "DECRYPTING RAIDER SCRIPTS...",
-        "WELCOME TO THE TEAM, "..DN.."!"
+    local isDoneCheck, authed = false, false
+    task.spawn(function()
+        local success, result = pcall(function() return game:HttpGet(MembersURL) end)
+        if success then
+            for name in result:gmatch("[^\r\n]+") do
+                if UN == name:gsub("%s+", "") or tostring(ID) == name:gsub("%s+", "") then authed = true break end
+            end
+        end
+        isDoneCheck = true
+    end)
+
+    local sequences = {
+        "LOCATING USER: "..UN,
+        "SCANNING DISPLAY: "..DN,
+        "FETCHING GITHUB MANIFEST...",
+        "VERIFYING RAIDER STATUS...",
+        "DECRYPTING CORE PAYLOADS...",
+        "WELCOME RAIDER. SYSTEM READY."
     }
 
-    for i,log in ipairs(logs) do
+    for i,log in ipairs(sequences) do
         LStatus.Text = log
-        tw(PBar, 1.2, {Size=UDim2.new(i/#logs,0,1,0)})
-        task.wait(1.2)
+        tw(PBar, 1.1, {Size=UDim2.new(i/#sequences,0,1,0)})
+        task.wait(1.1)
     end
 
-    local success, result = pcall(function() return game:HttpGet(MembersURL) end)
-    local authed = false
-    if success then
-        for name in result:gmatch("[^\r\n]+") do
-            local clean = name:gsub("%s+", "")
-            if UN == clean or tostring(L.UserId) == clean then authed = true break end
-        end
-    end
+    while not isDoneCheck do task.wait(0.1) end
 
     if authed then
         LStatus.Text = "ACCESS GRANTED. HELLO, "..DN.."."
         LStatus.TextColor3 = C.gn
-        task.wait(1)
-        LF:Destroy() 
-        mf.Visible = true 
-        Tog.Visible = true 
-        Notify("PHANTOM HUB", "Raider Connected: "..DN, C.gn)
+        tw(LF, 0.5, {BackgroundTransparency = 1})
+        for _,obj in pairs(LF:GetChildren()) do pcall(function() tw(obj, 0.5, {BackgroundTransparency=1, TextTransparency=1, ImageTransparency=1}) end) end
+        task.wait(0.6)
+        LF:Destroy() mf.Visible, Tog.Visible = true, true
+        Notify("PHANTOM HUB", "Authorized Access: "..DN, C.gn)
     else
-        LStatus.Text = "ACCESS DENIED: NOT A PHANTOM RAIDER."
-        LStatus.TextColor3 = C.rd
-        task.wait(2)
-        L:Kick("\n[PHANTOM HUB]\nAccess Denied.\nYou are not whitelisted.")
+        LStatus.Text = "ACCESS DENIED."
+        task.wait(1)
+        L:Kick("PHANTOM HUB: Unauthorized Identity Detected.")
     end
 end)
