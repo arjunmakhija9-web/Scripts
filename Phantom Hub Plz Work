@@ -1,4 +1,4 @@
-    -- PHANTOM HUB ⚡ | Phantom Raiders (Overdrive Final)
+-- PHANTOM HUB ⚡ | Phantom Raiders (Overdrive Final - Fixed)
 -- Developed by GG_gamerz002
 local MembersURL = "https://raw.githubusercontent.com/arjunmakhija9-web/Scripts/refs/heads/main/Members"
 
@@ -33,7 +33,7 @@ local function makeDraggable(gui)
     U.InputEnded:Connect(function(i) d=false end)
 end
 
--- MAIN HUB
+-- MAIN HUB FRAME
 local mf=m("Frame",{Size=UDim2.new(0,350,0,340),Position=UDim2.new(.5,-175,.5,-170),BackgroundColor3=C.bg,ClipsDescendants=true,Visible=false,ZIndex=10},sg)
 cr(mf,18)local brd=st(mf,C.p1,3,0)local gr=m("UIGradient",{Color=ColorSequence.new(C.p1,C.p2)},brd)
 task.spawn(function()while task.wait()do gr.Rotation=gr.Rotation+3 end end)
@@ -76,15 +76,20 @@ local function AddKey(n,k)
     cp.MouseButton1Click:Connect(function() setclipboard(k) Notify("SYSTEM","Key Copied!",C.cy) end)
 end
 
--- POPULATE
+-- SCRIPTS POPULATION
 AddScript("EXECUTE ALL SCRIPTS", function() Notify("OVERDRIVE","Injecting all payloads...",C.rd) for _,f in pairs(scripts_to_exec) do task.spawn(f) end end, C.rd, true)
--- YAHAN CHANGE KIYA HAI
+
+-- Fixed Fling GUI Link
 AddScript("Fling GUI (By Arjun)", function() loadstring(game:HttpGet("https://raw.githubusercontent.com/arjunmakhija9-web/Scripts/refs/heads/main/Fling%20GUI"))() end)
-AddScript("Fearless Chat Bypass", function() loadstring(game:HttpGet("https://raw.githubusercontent.com/arjunscripts.net/raw/Universal-Script-Fearless-Chat-Bypass-101789"))() end)
+
+-- Fixed Fearless Chat Bypass Link (Typo Removed)
+AddScript("Fearless Chat Bypass", function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Fearless-Chat-Bypass-101789"))() end)
+
 AddScript("Aura Animations", function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Aura-ANIMATIONS-script-75014"))() end)
 AddScript("Ak Admin (UGC Emotes)", function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-33K-UGC-EMOTES-129432"))() end)
 AddScript("Flames Hub Loader", function() loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Flames-Hub-Games-Script-Hub-Loader-49619"))() end)
 AddScript("Infinite Yield (Admin)", function() loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))() end)
+
 AddKey("Fearless Key", "levelup")
 
 -- TOGGLE
@@ -92,7 +97,7 @@ local Tog=m("TextButton",{Size=UDim2.new(0,55,0,55),Position=UDim2.new(0,20,0,20
 cr(Tog,28)st(Tog,C.p1,3,0)makeDraggable(Tog)
 Tog.MouseButton1Click:Connect(function() mf.Visible = not mf.Visible end)
 
--- PERSONALIZED LOADING
+-- LOADING LOGIC
 task.spawn(function()
     local LF = m("Frame",{Size=UDim2.new(1,0,1,0),BackgroundColor3=Color3.new(0,0,0),ZIndex=5000},sg)
     local Pfp = m("ImageLabel",{Size=UDim2.new(0,80,0,80),Position=UDim2.new(0.5,-40,0.3,0),BackgroundColor3=C.cd,Image="rbxthumb://type=AvatarHeadShot&id="..ID.."&w=150&h=150",ZIndex=5001},LF)cr(Pfp,40)st(Pfp,C.p1,2,0)
@@ -109,7 +114,7 @@ task.spawn(function()
     end)
 
     local sequences = {"SCANNING: "..UN, "LOCATING DISPLAY: "..DN, "FETCHING GITHUB...", "VERIFYING MEMBER...", "DECRYPTING DATA...", "FINALIZING ACCESS..."}
-    for i,v in ipairs(sequences) do LStatus.Text = v tw(PBar, 1.1, {Size=UDim2.new(i/#sequences,0,1,0)}) task.wait(1.1) end
+    for i,v in ipairs(sequences) do LStatus.Text = v tw(PBar, 0.8, {Size=UDim2.new(i/#sequences,0,1,0)}) task.wait(0.8) end
     while not isDone do task.wait(0.1) end
 
     if authed then
