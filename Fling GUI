@@ -1,197 +1,83 @@
--- PHANTOM GLITCH ⚡ | Phantom Raiders (V6 - Anti-Self Fling Fixed)
--- Developed by GG_gamerz002
-local P,T,U,R=game:GetService"Players",game:GetService"TweenService",game:GetService"UserInputService",game:GetService"RunService"
-local TS = game:GetService"TeleportService"
-local L = P.LocalPlayer
-local DN, UN, ID = L.DisplayName, L.Name, L.UserId
+-- [[ PHANTOM FLING ⚡ | MINI COMPACT EDITION ]] --
+-- Developed by GG_gamerz002 | Pro-Raider Tech
+-- Size: 300x350 | Fixed Search | No Auto-Exec
 
--- THEME COLORS
-local C={p1=Color3.fromRGB(255,0,0),p2=Color3.fromRGB(0,100,255),bg=Color3.fromRGB(8,8,12),cd=Color3.fromRGB(15,15,25),tx=Color3.fromRGB(255,255,255),cy=Color3.fromRGB(0,255,255),rd=Color3.fromRGB(255,0,0),gn=Color3.fromRGB(0,255,140)}
+local P,T,U,R,TS=game:GetService"Players",game:GetService"TweenService",game:GetService"UserInputService",game:GetService"RunService",game:GetService"TeleportService"
+local L,Col=P.LocalPlayer,{p1=Color3.new(1,0,0),p2=Color3.fromRGB(0,100,255),bg=Color3.fromRGB(8,8,12),cd=Color3.fromRGB(15,15,25),tx=Color3.new(1,1,1),gn=Color3.new(0,1,0),cy=Color3.new(0,1,1)}
+
 local function m(c,p,r)local i=Instance.new(c)for k,v in pairs(p)do i[k]=v end i.Parent=r return i end
 local function cr(p,r)m("UICorner",{CornerRadius=UDim.new(0,r)},p)end
-local function st(p,c,t,r)m("UIStroke",{Color=c,Thickness=t or 1.2,Transparency=r or.3,ApplyStrokeMode="Border"},p)end
-local function tw(o,t,p)local tw_obj=T:Create(o,TweenInfo.new(t,Enum.EasingStyle.Quint),p)tw_obj:Play()return tw_obj end
+local function st(p,cl,t)m("UIStroke",{Color=cl,Thickness=t or 1.2,ApplyStrokeMode="Border"},p)end
 
--- UI ROOT
-local sg=m("ScreenGui",{ResetOnSpawn=false,Name="PhantomFling",DisplayOrder=2000},game.CoreGui)
+local sg=m("ScreenGui",{ResetOnSpawn=false,Name="PF_Mini_Final"},game.CoreGui)
 
--- NOTIFICATION
-local function Notify(t,msg,co)
-    task.spawn(function()
-        local n=m("Frame",{Size=UDim2.new(0,300,0,80),Position=UDim2.new(1,30,1,-120),BackgroundColor3=C.bg,ZIndex=2000},sg)cr(n,12)st(n,co or C.p1,2.5,0)
-        m("TextLabel",{Size=UDim2.new(1,0,0,35),Position=UDim2.new(0,15,0,8),BackgroundTransparency=1,Text=t,TextColor3=co or C.p1,Font=Enum.Font.Michroma,TextSize=14,TextXAlignment=0,ZIndex=2002},n)
-        m("TextLabel",{Size=UDim2.new(1,0,0,30),Position=UDim2.new(0,15,0,40),BackgroundTransparency=1,Text=msg,TextColor3=C.tx,Font=3,TextSize=11,TextXAlignment=0,ZIndex=2002},n)
-        tw(n,.5,{Position=UDim2.new(1,-320,1,-120)})task.wait(2.5)tw(n,.5,{Position=UDim2.new(1,30,1,-120)})task.wait(.5)n:Destroy()
-    end)
+-- [[ MAIN FRAME ]] --
+local mf=m("Frame",{Size=UDim2.new(0,300,0,350),Position=UDim2.new(.5,-150,.5,-175),BackgroundColor3=Col.bg,ClipsDescendants=true,Visible=false},sg);cr(mf,12)st(mf,Col.p1,2.5)
+local function dr(g)local d,s,p g.InputBegan:Connect(function(i)if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then d,p,s=true,i.Position,g.Position end end)U.InputChanged:Connect(function(i)if d and(i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch)then local e=i.Position-p g.Position=UDim2.new(s.X.Scale,s.X.Offset+e.X,s.Y.Scale,s.Y.Offset+e.Y)end end)U.InputEnded:Connect(function()d=false end)end;dr(mf)
+
+-- [[ HEADER & RAINBOW ]] --
+m("TextLabel",{Size=UDim2.new(1,0,0,25),Position=UDim2.new(0,0,0,5),BackgroundTransparency=1,Text="PHANTOM FLING ⚡",TextColor3=Col.tx,Font=Enum.Font.Michroma,TextSize=13},mf)
+local rb=m("TextLabel",{Size=UDim2.new(1,0,0,12),Position=UDim2.new(0,0,0,25),BackgroundTransparency=1,Text="By GG_gamerz002",Font=3,TextSize=9},mf)
+spawn(function()local h=0 while task.wait(.02)do h=(h+1)%360 rb.TextColor3=Color3.fromHSV(h/360,.8,1)end end)
+
+-- [[ TABS ]] --
+local Pages={P=m("Frame",{Size=UDim2.new(1,0,1,-80),Position=UDim2.new(0,0,0,80),BackgroundTransparency=1,Visible=true},mf),T=m("Frame",{Size=UDim2.new(1,0,1,-80),Position=UDim2.new(0,0,0,80),BackgroundTransparency=1,Visible=false},mf)}
+local function Tab(n,x,p)local b=m("TextButton",{Size=UDim2.new(.5,-10,0,25),Position=UDim2.new(0,x,0,45),BackgroundColor3=Col.cd,Text=n,TextColor3=Col.tx,Font=3,TextSize=10},mf)cr(b,6)st(b,Col.p1,1)b.MouseButton1Click:Connect(function()Pages.P.Visible,Pages.T.Visible=(p==Pages.P),(p==Pages.T)end)end
+Tab("PLAYERS",8,Pages.P)Tab("TOOLS",155,Pages.T)
+
+-- [[ SEARCH BAR ]] --
+local sb_f=m("Frame",{Size=UDim2.new(1,-20,0,28),Position=UDim2.new(0,10,0,2),BackgroundColor3=Col.cd},Pages.P);cr(sb_f,6)st(sb_f,Col.p1,1)
+local sb=m("TextBox",{Size=UDim2.new(1,-10,1,0),Position=UDim2.new(0,10,0,0),BackgroundTransparency=1,Text="",PlaceholderText="Search Raider...",TextColor3=Col.tx,TextSize=10,Font=3,TextXAlignment=0},sb_f)
+local sf=m("ScrollingFrame",{Size=UDim2.new(1,-10,1,-35),Position=UDim2.new(0,5,0,35),BackgroundTransparency=1,ScrollBarThickness=0,AutomaticCanvasSize="Y"},Pages.P);m("UIListLayout",{Padding=UDim.new(0,5)},sf)
+
+local function ApplySearch()
+    local inp=sb.Text:lower()
+    for _,v in pairs(sf:GetChildren())do if v:IsA"Frame"then v.Visible=v.Name:find(inp)or v:GetAttribute("Disp"):find(inp)end end
+end
+sb:GetPropertyChangedSignal"Text":Connect(ApplySearch)
+
+-- [[ FLING ENGINE ]] --
+local function Fling(tp,sil)
+    if tp.Name=="GG_gamerz002"then return end
+    local char,tr=L.Character,tp.Character and tp.Character:FindFirstChild"HumanoidRootPart"
+    local r=char and char:FindFirstChild"HumanoidRootPart"
+    if not r or not tr then return end
+    local old=r.CFrame;local nc=R.Stepped:Connect(function()for _,v in pairs(char:GetDescendants())do if v:IsA"BasePart"then v.CanCollide=false end end end)
+    char.Humanoid.PlatformStand=true;local s=tick()
+    while tick()-s<2.5 do if not tr or not r then break end r.Velocity,r.RotVelocity=Vector3.new(5e5,5e5,5e5),Vector3.new(0,5e5,0)r.CFrame=tr.CFrame*CFrame.new(0,0,math.sin(tick()*45))R.Heartbeat:Wait()end
+    nc:Disconnect();r.Velocity,r.RotVelocity=Vector3.new(0,0,0),Vector3.new(0,0,0)task.wait(.1)r.CFrame=old;char.Humanoid.PlatformStand=false
 end
 
--- DRAGGING
-local function dr(g)
-    local d,s,p g.InputBegan:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then d,p,s=true,i.Position,g.Position end end)
-    U.InputChanged:Connect(function(i) if d and(i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch)then local e=i.Position-p g.Position=UDim2.new(s.X.Scale,s.X.Offset+e.X,s.Y.Scale,s.Y.Offset+e.Y)end end)
-    U.InputEnded:Connect(function(i) d=false end)
-end
-
--- MAIN GUI
-local mf=m("Frame",{Size=UDim2.new(0,400,0,420),Position=UDim2.new(.5,-200,.5,-210),BackgroundColor3=C.bg,ClipsDescendants=true,Visible=false,ZIndex=10},sg)
-cr(mf,18)local brd=st(mf,C.p1,3,0)local gr=m("UIGradient",{Color=ColorSequence.new(C.p1,C.p2)},brd)
-task.spawn(function()while task.wait()do gr.Rotation=gr.Rotation+3 end end)
-dr(mf)
-
-m("TextLabel",{Size=UDim2.new(1,0,0,30),Position=UDim2.new(0,18,0,8),BackgroundTransparency=1,Text="PHANTOM GLITCH ⚡",TextColor3=C.tx,TextSize=18,Font=Enum.Font.Michroma,TextXAlignment=0,ZIndex=16},mf)
-
--- TABS & PAGES
-local TabHolder = m("Frame",{Size=UDim2.new(1,-30,0,35),Position=UDim2.new(0,15,0,45),BackgroundTransparency=1,ZIndex=20},mf)
-local btnPlr = m("TextButton",{Size=UDim2.new(0.5,-5,1,0),Position=UDim2.new(0,0,0,0),BackgroundColor3=C.cd,Text="PLAYERS",TextColor3=C.p1,Font=Enum.Font.Michroma,TextSize=10,ZIndex=21},TabHolder)cr(btnPlr,8)st(btnPlr,C.p1,1)
-local btnTools = m("TextButton",{Size=UDim2.new(0.5,5,1,0),Position=UDim2.new(0.5,5,0,0),BackgroundColor3=C.cd,Text="TOOLS",TextColor3=C.tx,Font=Enum.Font.Michroma,TextSize=10,ZIndex=21},TabHolder)cr(btnTools,8)st(btnTools,C.p1,1)
-
-local PlayerPage = m("Frame",{Size=UDim2.new(1,0,1,-90),Position=UDim2.new(0,0,0,90),BackgroundTransparency=1,Visible=true},mf)
-local ToolsPage = m("Frame",{Size=UDim2.new(1,0,1,-90),Position=UDim2.new(0,0,0,90),BackgroundTransparency=1,Visible=false},mf)
-
-btnPlr.MouseButton1Click:Connect(function() PlayerPage.Visible=true ToolsPage.Visible=false btnPlr.TextColor3=C.p1 btnTools.TextColor3=C.tx end)
-btnTools.MouseButton1Click:Connect(function() PlayerPage.Visible=false ToolsPage.Visible=true btnTools.TextColor3=C.p1 btnPlr.TextColor3=C.tx end)
-
--- SEARCH
-local sb_f = m("Frame",{Size=UDim2.new(1,-30,0,30),Position=UDim2.new(0,15,0,5),BackgroundColor3=C.cd,ZIndex=22},PlayerPage)cr(sb_f,6)st(sb_f,C.p1,1,.5)
-local sb = m("TextBox",{Size=UDim2.new(1,-10,1,0),Position=UDim2.new(0,10,0,0),BackgroundTransparency=1,Text="",PlaceholderText="Username likho...",TextColor3=C.tx,PlaceholderColor3=Color3.fromRGB(100,100,100),TextSize=11,Font=3,TextXAlignment=0,ZIndex=23},sb_f)
-
--- PLAYER LIST
-local sf = m("ScrollingFrame",{Size=UDim2.new(1,-20,1,-50),Position=UDim2.new(0,10,0,45),BackgroundTransparency=1,ScrollBarThickness=0,CanvasSize=UDim2.new(0,0,0,0),AutomaticCanvasSize="Y",ZIndex=22},PlayerPage)
-m("UIListLayout",{Padding=UDim.new(0,8),SortOrder="LayoutOrder"},sf)
-
--- TOOLS GRID
-local toolGrid = m("Frame",{Size=UDim2.new(1,-20,1,-10),Position=UDim2.new(0,10,0,5),BackgroundTransparency=1},ToolsPage)
-m("UIGridLayout",{CellSize=UDim2.new(0,175,0,45),CellPadding=UDim2.new(0,10,0,10)},toolGrid)
-
--- 🛠️ FIXED FLING ENGINE (ANTI-SELF FLING)
-local function Fling(TargetPlr, silent)
-    if TargetPlr.Name == "GG_gamerz002" then 
-        if not silent then Notify("ACCESS DENIED", "Bhai ko fling mat kar!", C.rd) end
-        return 
-    end
-
-    local Char = L.Character
-    local Hum = Char and Char:FindFirstChildOfClass("Humanoid")
-    local Root = Char and Char:FindFirstChild("HumanoidRootPart")
-    local TChar = TargetPlr.Character
-    local TRoot = TChar and TChar:FindFirstChild("HumanoidRootPart")
-    
-    if not Root or not TRoot or not Hum then return end
-    
-    -- SAVE REST POSITION
-    local OldCF = Root.CFrame
-    if not silent then Notify("PHANTOM FLING", "Target: "..TargetPlr.DisplayName, C.rd) end
-    
-    -- PHYSICS PROTECTION
-    Hum.PlatformStand = true
-    Hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
-    
-    local noclip = R.Stepped:Connect(function()
-        for _, v in pairs(Char:GetDescendants()) do 
-            if v:IsA("BasePart") then v.CanCollide = false end 
-        end
-    end)
-    
-    -- FLING LOOP
-    local start = tick()
-    local duration = silent and 2 or 3 -- Fling all ke liye thoda fast
-    
-    while tick() - start < duration do
-        if not TRoot or not Root or not L.Character then break end
-        
-        -- Apply massive velocity to FLING target
-        Root.Velocity = Vector3.new(500000, 500000, 500000)
-        Root.RotVelocity = Vector3.new(0, 500000, 0)
-        
-        -- Tight oscillation (1 stud)
-        local wave = math.sin((tick() - start) * 45) * 1
-        Root.CFrame = TRoot.CFrame * CFrame.new(0, 0, wave)
-        
-        R.Heartbeat:Wait()
-    end
-    
-    -- 🛑 RESTORATION (Return to safe position)
-    noclip:Disconnect()
-    
-    -- Reset momentum before TP back
-    Root.Velocity = Vector3.new(0, 0, 0)
-    Root.RotVelocity = Vector3.new(0, 0, 0)
-    
-    -- Small delay to let physics settle
-    task.wait(0.1)
-    
-    Root.CFrame = OldCF
-    Hum.PlatformStand = false
-    Hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
-    
-    if not silent then Notify("SUCCESS", "Purani jagah wapas aa gaye.", C.gn) end
-end
-
--- TOOLS CONTENT
-local function AddTool(name, color, call)
-    local b = m("TextButton",{BackgroundColor3=C.cd,Text=name,TextColor3=color or C.tx,Font=Enum.Font.Michroma,TextSize=10},toolGrid)
-    cr(b,8)st(b,color or C.p2,1) b.MouseButton1Click:Connect(call)
-end
-
-AddTool("FLING ALL", C.rd, function()
-    Notify("MASS PURGE", "Pure server ko uda raha hu...", C.rd)
-    local players = P:GetPlayers()
-    for _, p in pairs(players) do
-        if p ~= L and p.Name ~= "GG_gamerz002" then
-            Fling(p, true)
-            task.wait(0.1)
-        end
-    end
-    Notify("COMPLETE", "Sab saaf ho gaye!", C.gn)
-end)
-
-AddTool("REJOIN", C.tx, function() TS:TeleportToPlaceInstance(game.PlaceId, game.JobId, L) end)
-AddTool("SERVER HOP", C.cy, function() Notify("SERVER", "Searching...", C.cy) end)
-AddTool("ANTI-AFK", C.gn, function() 
-    L.Idled:Connect(function() game:GetService("VirtualUser"):Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame) task.wait(1) game:GetService("VirtualUser"):Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame) end) 
-    Notify("ANTI-AFK", "Enabled.", C.gn) 
-end)
-AddTool("RESET", C.rd, function() if L.Character then L.Character:BreakJoints() end end)
-
--- PLAYER REFRESH
+-- [[ REFRESH LIST ]] --
 local function Refresh()
-    for _,v in pairs(sf:GetChildren()) do if v:IsA("Frame") then v:Destroy() end end
-    for _,p in pairs(P:GetPlayers()) do
-        if p ~= L then
-            local f = m("Frame",{Size=UDim2.new(1,-5,0,70),BackgroundColor3=C.cd,ZIndex=25,Name=p.Name:lower()},sf)cr(f,10)st(f,C.p2,1,.6)
-            local dname = m("TextLabel",{Size=UDim2.new(.5,0,0,20),Position=UDim2.new(0,12,0,15),BackgroundTransparency=1,Text=p.DisplayName,TextColor3=C.tx,Font=Enum.Font.Michroma,TextSize=10,TextXAlignment=0,ZIndex=26},f)
-            
-            if p.Name == "GG_gamerz002" then
-                m("TextLabel",{Size=UDim2.new(0,100,0,20),Position=UDim2.new(0,12,0,45),BackgroundTransparency=1,Text="[OWNER]",TextColor3=C.p1,Font=Enum.Font.Michroma,TextSize=9,TextXAlignment=0,ZIndex=26},f)
-                st(f, C.p1, 2) dname.TextColor3 = C.p1
-            end
-            m("TextLabel",{Size=UDim2.new(.5,0,0,15),Position=UDim2.new(0,12,0,32),BackgroundTransparency=1,Text="@"..p.Name,TextColor3=Color3.fromRGB(150,150,150),Font=3,TextSize=10,TextXAlignment=0,ZIndex=26},f)
-
-            local fl = m("TextButton",{Size=UDim2.new(0,55,0,38),Position=UDim2.new(1,-65,0.5,-19),BackgroundColor3=C.rd,Text="FLING",TextColor3=C.tx,Font=Enum.Font.Michroma,TextSize=9,ZIndex=28},f)cr(fl,6)
-            local tp = m("TextButton",{Size=UDim2.new(0,42,0,38),Position=UDim2.new(1,-112,0.5,-19),BackgroundColor3=C.bg,Text="TP",TextColor3=C.gn,Font=3,TextSize=10,ZIndex=28},f)cr(tp,6)st(tp,C.gn,1)
-            local cp = m("TextButton",{Size=UDim2.new(0,42,0,38),Position=UDim2.new(1,-159,0.5,-19),BackgroundColor3=C.bg,Text="CPY",TextColor3=C.cy,Font=3,TextSize=10,ZIndex=28},f)cr(cp,6)st(cp,C.cy,1)
-
-            fl.MouseButton1Click:Connect(function() Fling(p) end)
-            tp.MouseButton1Click:Connect(function() if L.Character and p.Character then L.Character.HumanoidRootPart.CFrame = p.Character.HumanoidRootPart.CFrame end end)
-            cp.MouseButton1Click:Connect(function() pcall(function() setclipboard(p.Name) end) Notify("COPIED", p.Name, C.cy) end)
-        end
-    end
+    for _,v in pairs(sf:GetChildren())do if v:IsA"Frame"then v:Destroy()end end
+    for _,p in pairs(P:GetPlayers())do if p~=L then
+        local f=m("Frame",{Size=UDim2.new(1,-5,0,55),BackgroundColor3=Col.cd,Name=p.Name:lower()},sf);cr(f,8)st(f,p.Name=="GG_gamerz002"and Col.p1 or Col.p2)
+        f:SetAttribute("Disp",p.DisplayName:lower())
+        m("TextLabel",{Size=UDim2.new(.5,0,0,15),Position=UDim2.new(0,8,0,10),BackgroundTransparency=1,Text=p.DisplayName,TextColor3=p.Name=="GG_gamerz002"and Col.p1 or Col.tx,Font=3,TextSize=10,TextXAlignment=0},f)
+        m("TextLabel",{Size=UDim2.new(.5,0,0,12),Position=UDim2.new(0,8,0,25),BackgroundTransparency=1,Text="@"..p.Name,TextColor3=Color3.new(.5,.5,.5),Font=3,TextSize=8,TextXAlignment=0},f)
+        
+        local fl=m("TextButton",{Size=UDim2.new(0,45,0,28),Position=UDim2.new(1,-50,.5,-14),BackgroundColor3=Col.p1,Text="FLING",TextColor3=Col.tx,Font=3,TextSize=8},f);cr(fl,5)
+        local tp=m("TextButton",{Size=UDim2.new(0,30,0,28),Position=UDim2.new(1,-85,.5,-14),BackgroundColor3=Col.bg,Text="TP",TextColor3=Col.gn,Font=3,TextSize=8},f);cr(tp,5)st(tp,Col.gn,1)
+        local cp=m("TextButton",{Size=UDim2.new(0,30,0,28),Position=UDim2.new(1,-120,.5,-14),BackgroundColor3=Col.bg,Text="CPY",TextColor3=Col.cy,Font=3,TextSize=8},f);cr(cp,5)st(cp,Col.cy,1)
+        
+        fl.MouseButton1Click:Connect(function()Fling(p)end)
+        tp.MouseButton1Click:Connect(function()if L.Character and p.Character then L.Character.HumanoidRootPart.CFrame=p.Character.HumanoidRootPart.CFrame end end)
+        cp.MouseButton1Click:Connect(function()setclipboard(p.Name)end)
+    end end
+    ApplySearch()
 end
 
-sb:GetPropertyChangedSignal("Text"):Connect(function()
-    local input = sb.Text:lower()
-    for _,v in pairs(sf:GetChildren()) do if v:IsA("Frame") then v.Visible = v.Name:find(input) or false end end
-end)
+-- [[ TOOLS ]] --
+local tGrid=m("Frame",{Size=UDim2.new(1,-20,1,-10),Position=UDim2.new(0,10,0,5),BackgroundTransparency=1},Pages.T);m("UIGridLayout",{CellSize=UDim2.new(0,135,0,35),CellPadding=UDim2.new(0,10,0,10)},tGrid)
+local function AddTool(n,cl,f)local b=m("TextButton",{BackgroundColor3=Col.cd,Text=n,TextColor3=cl,Font=3,TextSize=9},tGrid);cr(b,6)st(b,cl,1)b.MouseButton1Click:Connect(f)end
 
-P.PlayerAdded:Connect(Refresh) P.PlayerRemoving:Connect(Refresh) Refresh()
+AddTool("FLING ALL",Col.p1,function()for _,p in pairs(P:GetPlayers())do if p~=L then Fling(p,true)task.wait(.1)end end end)
+AddTool("SERVER HOP",Col.cy,function()TS:Teleport(game.PlaceId)end)
+AddTool("REJOIN",Col.tx,function()TS:TeleportToPlaceInstance(game.PlaceId,game.JobId,L)end)
 
--- TOGGLE
-local Tog=m("TextButton",{Size=UDim2.new(0,55,0,55),Position=UDim2.new(0,20,0,200),BackgroundColor3=C.bg,Text="FG",TextColor3=C.tx,Font=Enum.Font.Michroma,TextSize=18,ZIndex=500,Visible=false},sg)
-cr(Tog,28)st(Tog,C.p1,3,0)dr(Tog)
-Tog.MouseButton1Click:Connect(function() mf.Visible = not mf.Visible end)
+P.PlayerAdded:Connect(Refresh);P.PlayerRemoving:Connect(Refresh);Refresh()
 
--- LOADING
-task.spawn(function()
-    local LF = m("Frame",{Size=UDim2.new(1,0,1,0),BackgroundColor3=Color3.new(0,0,0),ZIndex=5000},sg)
-    task.wait(1) tw(LF, 0.5, {BackgroundTransparency = 1}) task.wait(0.6) LF:Destroy() mf.Visible, Tog.Visible = true, true
-end)
+-- [[ TOGGLE ]] --
+local Tog=m("TextButton",{Size=UDim2.new(0,45,0,45),Position=UDim2.new(0,20,0,200),BackgroundColor3=Col.bg,Text="FG",TextColor3=Col.tx,Font=3,TextSize=14,ZIndex=500},sg)
+cr(Tog,22.5)st(Tog,Col.p1,2)dr(Tog)Tog.MouseButton1Click:Connect(function()mf.Visible=not mf.Visible end)
