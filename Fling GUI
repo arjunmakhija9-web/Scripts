@@ -1,31 +1,45 @@
--- [[ PHANTOM FLING ⚡ | MINI COMPACT EDITION ]] --
+-- [[ PHANTOM FLING ⚡ | MEMBER PROTECTION EDITION ]] --
 -- Developed by GG_gamerz002 | Pro-Raider Tech
--- Size: 300x350 | Fixed Search | No Auto-Exec
+-- Size: 300x350 | Persistent Search | Member Tags
 
 local P,T,U,R,TS=game:GetService"Players",game:GetService"TweenService",game:GetService"UserInputService",game:GetService"RunService",game:GetService"TeleportService"
 local L,Col=P.LocalPlayer,{p1=Color3.new(1,0,0),p2=Color3.fromRGB(0,100,255),bg=Color3.fromRGB(8,8,12),cd=Color3.fromRGB(15,15,25),tx=Color3.new(1,1,1),gn=Color3.new(0,1,0),cy=Color3.new(0,1,1)}
+local MembersURL = "https://raw.githubusercontent.com/arjunmakhija9-web/Scripts/refs/heads/main/Members"
 
 local function m(c,p,r)local i=Instance.new(c)for k,v in pairs(p)do i[k]=v end i.Parent=r return i end
 local function cr(p,r)m("UICorner",{CornerRadius=UDim.new(0,r)},p)end
 local function st(p,cl,t)m("UIStroke",{Color=cl,Thickness=t or 1.2,ApplyStrokeMode="Border"},p)end
 
-local sg=m("ScreenGui",{ResetOnSpawn=false,Name="PF_Mini_Final"},game.CoreGui)
+-- [[ FETCH MEMBERS ]] --
+local AuthorizedMembers = {}
+task.spawn(function()
+    local s, r = pcall(function() return game:HttpGet(MembersURL) end)
+    if s then for n in r:gmatch("[^\r\n]+") do table.insert(AuthorizedMembers, n:gsub("%s+", ""):lower()) end end
+end)
 
--- [[ MAIN FRAME ]] --
+local function IsMember(p)
+    for _, name in pairs(AuthorizedMembers) do
+        if p.Name:lower() == name or tostring(p.UserId) == name then return true end
+    end
+    return false
+end
+
+-- [[ UI ROOT ]] --
+local sg=m("ScreenGui",{ResetOnSpawn=false,Name="PF_Member_Edition"},game.CoreGui)
 local mf=m("Frame",{Size=UDim2.new(0,300,0,350),Position=UDim2.new(.5,-150,.5,-175),BackgroundColor3=Col.bg,ClipsDescendants=true,Visible=false},sg);cr(mf,12)st(mf,Col.p1,2.5)
 local function dr(g)local d,s,p g.InputBegan:Connect(function(i)if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then d,p,s=true,i.Position,g.Position end end)U.InputChanged:Connect(function(i)if d and(i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch)then local e=i.Position-p g.Position=UDim2.new(s.X.Scale,s.X.Offset+e.X,s.Y.Scale,s.Y.Offset+e.Y)end end)U.InputEnded:Connect(function()d=false end)end;dr(mf)
 
 -- [[ HEADER & RAINBOW ]] --
 m("TextLabel",{Size=UDim2.new(1,0,0,25),Position=UDim2.new(0,0,0,5),BackgroundTransparency=1,Text="PHANTOM FLING ⚡",TextColor3=Col.tx,Font=Enum.Font.Michroma,TextSize=13},mf)
 local rb=m("TextLabel",{Size=UDim2.new(1,0,0,12),Position=UDim2.new(0,0,0,25),BackgroundTransparency=1,Text="By GG_gamerz002",Font=3,TextSize=9},mf)
-spawn(function()local h=0 while task.wait(.02)do h=(h+1)%360 rb.TextColor3=Color3.fromHSV(h/360,.8,1)end end)
+task.spawn(function()local h=0 while task.wait(.02)do h=(h+1)%360 rb.TextColor3=Color3.fromHSV(h/360,.8,1)end end)
 
 -- [[ TABS ]] --
 local Pages={P=m("Frame",{Size=UDim2.new(1,0,1,-80),Position=UDim2.new(0,0,0,80),BackgroundTransparency=1,Visible=true},mf),T=m("Frame",{Size=UDim2.new(1,0,1,-80),Position=UDim2.new(0,0,0,80),BackgroundTransparency=1,Visible=false},mf)}
 local function Tab(n,x,p)local b=m("TextButton",{Size=UDim2.new(.5,-10,0,25),Position=UDim2.new(0,x,0,45),BackgroundColor3=Col.cd,Text=n,TextColor3=Col.tx,Font=3,TextSize=10},mf)cr(b,6)st(b,Col.p1,1)b.MouseButton1Click:Connect(function()Pages.P.Visible,Pages.T.Visible=(p==Pages.P),(p==Pages.T)end)end
 Tab("PLAYERS",8,Pages.P)Tab("TOOLS",155,Pages.T)
 
--- [[ SEARCH BAR ]] --
+-- [[ SEARCH ]] --
 local sb_f=m("Frame",{Size=UDim2.new(1,-20,0,28),Position=UDim2.new(0,10,0,2),BackgroundColor3=Col.cd},Pages.P);cr(sb_f,6)st(sb_f,Col.p1,1)
 local sb=m("TextBox",{Size=UDim2.new(1,-10,1,0),Position=UDim2.new(0,10,0,0),BackgroundTransparency=1,Text="",PlaceholderText="Search Raider...",TextColor3=Col.tx,TextSize=10,Font=3,TextXAlignment=0},sb_f)
 local sf=m("ScrollingFrame",{Size=UDim2.new(1,-10,1,-35),Position=UDim2.new(0,5,0,35),BackgroundTransparency=1,ScrollBarThickness=0,AutomaticCanvasSize="Y"},Pages.P);m("UIListLayout",{Padding=UDim.new(0,5)},sf)
@@ -38,7 +52,7 @@ sb:GetPropertyChangedSignal"Text":Connect(ApplySearch)
 
 -- [[ FLING ENGINE ]] --
 local function Fling(tp,sil)
-    if tp.Name=="GG_gamerz002"then return end
+    if tp.Name == "GG_gamerz002" or IsMember(tp) then return end -- PROTECT MEMBERS
     local char,tr=L.Character,tp.Character and tp.Character:FindFirstChild"HumanoidRootPart"
     local r=char and char:FindFirstChild"HumanoidRootPart"
     if not r or not tr then return end
@@ -52,18 +66,28 @@ end
 local function Refresh()
     for _,v in pairs(sf:GetChildren())do if v:IsA"Frame"then v:Destroy()end end
     for _,p in pairs(P:GetPlayers())do if p~=L then
-        local f=m("Frame",{Size=UDim2.new(1,-5,0,55),BackgroundColor3=Col.cd,Name=p.Name:lower()},sf);cr(f,8)st(f,p.Name=="GG_gamerz002"and Col.p1 or Col.p2)
+        local isM = IsMember(p)
+        local f=m("Frame",{Size=UDim2.new(1,-5,0,55),BackgroundColor3=Col.cd,Name=p.Name:lower()},sf);cr(f,8)
+        st(f, (p.Name == "GG_gamerz002" and Col.p1) or (isM and Col.cy) or Col.p2)
         f:SetAttribute("Disp",p.DisplayName:lower())
-        m("TextLabel",{Size=UDim2.new(.5,0,0,15),Position=UDim2.new(0,8,0,10),BackgroundTransparency=1,Text=p.DisplayName,TextColor3=p.Name=="GG_gamerz002"and Col.p1 or Col.tx,Font=3,TextSize=10,TextXAlignment=0},f)
-        m("TextLabel",{Size=UDim2.new(.5,0,0,12),Position=UDim2.new(0,8,0,25),BackgroundTransparency=1,Text="@"..p.Name,TextColor3=Color3.new(.5,.5,.5),Font=3,TextSize=8,TextXAlignment=0},f)
+
+        local dname=m("TextLabel",{Size=UDim2.new(.5,0,0,15),Position=UDim2.new(0,8,0,10),BackgroundTransparency=1,Text=p.DisplayName,TextColor3= (p.Name == "GG_gamerz002" and Col.p1) or (isM and Col.cy) or Col.tx,Font=3,TextSize=10,TextXAlignment=0},f)
         
-        local fl=m("TextButton",{Size=UDim2.new(0,45,0,28),Position=UDim2.new(1,-50,.5,-14),BackgroundColor3=Col.p1,Text="FLING",TextColor3=Col.tx,Font=3,TextSize=8},f);cr(fl,5)
+        local tagText = "@"..p.Name
+        if p.Name == "GG_gamerz002" then tagText = "[OWNER] @GG_gamerz002" 
+        elseif isM then tagText = "[MEMBER] @"..p.Name end
+        m("TextLabel",{Size=UDim2.new(.5,0,0,12),Position=UDim2.new(0,8,0,25),BackgroundTransparency=1,Text=tagText,TextColor3=Color3.new(.5,.5,.5),Font=3,TextSize=8,TextXAlignment=0},f)
+        
+        local flText, flColor = "FLING", Col.p1
+        if isM or p.Name == "GG_gamerz002" then flText, flColor = "SAFE", Color3.fromRGB(50,50,50) end
+        
+        local fl=m("TextButton",{Size=UDim2.new(0,45,0,28),Position=UDim2.new(1,-50,.5,-14),BackgroundColor3=flColor,Text=flText,TextColor3=Col.tx,Font=3,TextSize=8},f);cr(fl,5)
         local tp=m("TextButton",{Size=UDim2.new(0,30,0,28),Position=UDim2.new(1,-85,.5,-14),BackgroundColor3=Col.bg,Text="TP",TextColor3=Col.gn,Font=3,TextSize=8},f);cr(tp,5)st(tp,Col.gn,1)
         local cp=m("TextButton",{Size=UDim2.new(0,30,0,28),Position=UDim2.new(1,-120,.5,-14),BackgroundColor3=Col.bg,Text="CPY",TextColor3=Col.cy,Font=3,TextSize=8},f);cr(cp,5)st(cp,Col.cy,1)
         
-        fl.MouseButton1Click:Connect(function()Fling(p)end)
-        tp.MouseButton1Click:Connect(function()if L.Character and p.Character then L.Character.HumanoidRootPart.CFrame=p.Character.HumanoidRootPart.CFrame end end)
-        cp.MouseButton1Click:Connect(function()setclipboard(p.Name)end)
+        fl.MouseButton1Click:Connect(function() if not isM then Fling(p) end end)
+        tp.MouseButton1Click:Connect(function() if L.Character then L.Character.HumanoidRootPart.CFrame=p.Character.HumanoidRootPart.CFrame end end)
+        cp.MouseButton1Click:Connect(function() setclipboard(p.Name) end)
     end end
     ApplySearch()
 end
@@ -71,8 +95,7 @@ end
 -- [[ TOOLS ]] --
 local tGrid=m("Frame",{Size=UDim2.new(1,-20,1,-10),Position=UDim2.new(0,10,0,5),BackgroundTransparency=1},Pages.T);m("UIGridLayout",{CellSize=UDim2.new(0,135,0,35),CellPadding=UDim2.new(0,10,0,10)},tGrid)
 local function AddTool(n,cl,f)local b=m("TextButton",{BackgroundColor3=Col.cd,Text=n,TextColor3=cl,Font=3,TextSize=9},tGrid);cr(b,6)st(b,cl,1)b.MouseButton1Click:Connect(f)end
-
-AddTool("FLING ALL",Col.p1,function()for _,p in pairs(P:GetPlayers())do if p~=L then Fling(p,true)task.wait(.1)end end end)
+AddTool("FLING ALL",Col.p1,function()for _,p in pairs(P:GetPlayers())do if p~=L and not IsMember(p) then Fling(p,true)task.wait(0.1)end end end)
 AddTool("SERVER HOP",Col.cy,function()TS:Teleport(game.PlaceId)end)
 AddTool("REJOIN",Col.tx,function()TS:TeleportToPlaceInstance(game.PlaceId,game.JobId,L)end)
 
