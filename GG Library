@@ -1,6 +1,6 @@
 -- [[ GG LIBRARY - ULTIMATE IMPROVED EDITION ]] --
 -- Theme: Original Dark Blue + Intense Neon Red
--- Status: Fixed & Optimized for Global Execution
+-- Status: Fixed & Optimized for Global Execution (Image Fix)
 
 local UIS = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
@@ -90,14 +90,17 @@ function CyberLib:CreateWindow(hubName)
     Layout.Padding = UDim.new(0, 12)
     Layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
-    -- [[ FLOATING TOGGLE ICON ]]
+    -- [[ FLOATING TOGGLE ICON (IMAGE LINK FIXED) ]]
     local ToggleGui = Instance.new("ScreenGui", CoreGui)
     ToggleGui.Name = "GGToggle_Final"
     local TglBtn = Instance.new("ImageButton", ToggleGui)
     TglBtn.Size = UDim2.new(0, 55, 0, 55)
     TglBtn.Position = UDim2.new(0, 20, 0.5, -27)
     TglBtn.BackgroundColor3 = Color3.fromRGB(8, 8, 20)
-    TglBtn.Image = "rbxassetid://126880062074667" -- Native Roblox format for Asset IDs
+    
+    -- Wapas wahi proper web link daal diya jo asset ki image fetch karega
+    TglBtn.Image = "https://www.roblox.com/asset-thumbnail/image?assetId=126880062074667&width=420&height=420&format=png"
+    
     TglBtn.Draggable = true
     Instance.new("UICorner", TglBtn).CornerRadius = UDim.new(0, 15)
     local TS_Stroke = Instance.new("UIStroke", TglBtn)
@@ -201,7 +204,7 @@ function CyberLib:CreateWindow(hubName)
         end)
     end
 
-    -- 4. CLEAN EX-DESTROY SYSTEM (Scope Bug Fix)
+    -- 4. CLEAN EX-DESTROY SYSTEM
     function WindowObj:Destroy()
         Ani(MainFrame, 0.4, {Size = UDim2.new(0, 0, 0, 0)}, Enum.EasingStyle.Back)
         task.wait(0.4)
@@ -209,7 +212,7 @@ function CyberLib:CreateWindow(hubName)
         ToggleGui:Destroy()
     end
 
-    -- Support shorthand names too (:Toggle, :Button, :Window)
+    -- Shorthand names support
     WindowObj.Button = WindowObj.CreateButton
     WindowObj.Toggle = WindowObj.CreateToggle
     WindowObj.TextBox = WindowObj.CreateTextBox
