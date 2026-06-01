@@ -1,219 +1,180 @@
--- [[ GG LIBRARY V3 - OFFICIAL MODULE ]] --
--- Theme: Cyberpunk (Dark Blue & Neon Red)
--- Features: Elastic Animations, Ripple Effects, Asset Fix
+-- [[ GG LIBRARY V5 - INFINITY ANIMATIONS EDITION ]] --
+-- Theme: Dark Blue & Neon Red | Fixed for Delta Mobile
 
 local CyberLib = {}
-
 local UIS = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 local TS = game:GetService("TweenService")
 local Player = game.Players.LocalPlayer
 local Mouse = Player:GetMouse()
-local ContentProvider = game:GetService("ContentProvider")
 
 -- Utility: Advanced Tween Engine
-local function Ani(obj, time, prop, style)
-    local style = style or Enum.EasingStyle.Quart
-    local tween = TS:Create(obj, TweenInfo.new(time, style, Enum.EasingDirection.Out), prop)
+local function Ani(obj, time, prop, style, dir)
+    local info = TweenInfo.new(time, style or Enum.EasingStyle.Quart, dir or Enum.EasingDirection.Out)
+    local tween = TS:Create(obj, info, prop)
     tween:Play()
     return tween
 end
 
+-- [[ NOTIFICATION SYSTEM ]] --
+function CyberLib:Notification(title, text, duration)
+    local NotifGui = Instance.new("ScreenGui", CoreGui)
+    local Frame = Instance.new("Frame", NotifGui)
+    Frame.Size = UDim2.new(0, 220, 0, 65)
+    Frame.Position = UDim2.new(1, 30, 0.8, 0) -- Start off-screen
+    Frame.BackgroundColor3 = Color3.fromRGB(10, 10, 25)
+    Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 10)
+    local S = Instance.new("UIStroke", Frame)
+    S.Color = Color3.fromRGB(255, 0, 60); S.Thickness = 2
+
+    local T = Instance.new("TextLabel", Frame)
+    T.Text = " " .. title; T.Size = UDim2.new(1, 0, 0, 25); T.TextColor3 = Color3.new(0, 1, 1); T.BackgroundTransparency = 1; T.Font = "GothamBold"; T.TextXAlignment = "Left"
+
+    local D = Instance.new("TextLabel", Frame)
+    D.Text = " " .. text; D.Size = UDim2.new(1, 0, 1, -25); D.Position = UDim2.new(0, 0, 0, 25); D.TextColor3 = Color3.new(1, 1, 1); D.BackgroundTransparency = 1; D.TextSize = 11; D.TextWrapped = true; D.TextXAlignment = "Left"; D.TextYAlignment = "Top"
+
+    Ani(Frame, 0.5, {Position = UDim2.new(1, -230, 0.8, 0)})
+    task.delay(duration or 3, function()
+        Ani(Frame, 0.5, {Position = UDim2.new(1, 30, 0.8, 0)})
+        task.wait(0.5)
+        NotifGui:Destroy()
+    end)
+end
+
 function CyberLib:CreateWindow(hubName)
-    -- Cleanup of previous instances
+    -- Cleanup
     for _, v in pairs(CoreGui:GetChildren()) do
-        if v.Name == "GGLib_Final" or v.Name == "GGToggle_Final" then
-            v:Destroy()
-        end
+        if v.Name == "GG_Universal_V5" or v.Name == "GG_Toggle_V5" then v:Destroy() end
     end
 
-    local MainGui = Instance.new("ScreenGui")
-    MainGui.Name = "GGLib_Final"
-    MainGui.Parent = CoreGui
-    MainGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
-    -- MAIN FRAME
-    local MainFrame = Instance.new("Frame")
-    MainFrame.Name = "MainFrame"
-    MainFrame.Parent = MainGui
-    MainFrame.BackgroundColor3 = Color3.fromRGB(5, 5, 12)
-    MainFrame.Position = UDim2.new(0.5, -110, 0.4, -115)
-    MainFrame.Size = UDim2.new(0, 0, 0, 0) -- Starts at 0 for Elastic Animation
-    MainFrame.ClipsDescendants = true
-    MainFrame.Active = true
-
-    local MainCorner = Instance.new("UICorner", MainFrame)
-    MainCorner.CornerRadius = UDim.new(0, 18)
-
-    local MainStroke = Instance.new("UIStroke", MainFrame)
-    MainStroke.Thickness = 3
-    MainStroke.Color = Color3.fromRGB(255, 0, 60) -- Neon Red
-    MainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-
-    -- TITLE BAR
-    local Title = Instance.new("TextLabel")
-    Title.Size = UDim2.new(1, 0, 0, 45)
-    Title.BackgroundColor3 = Color3.fromRGB(12, 12, 28)
-    Title.Text = "» " .. hubName .. " «"
-    Title.TextColor3 = Color3.fromRGB(0, 255, 255) -- Cyan
-    Title.Font = Enum.Font.RobotoMono
-    Title.TextSize = 18
-    Title.Parent = MainFrame
-    Instance.new("UICorner", Title).CornerRadius = UDim.new(0, 18)
-
-    -- Elastic Opening
-    Ani(MainFrame, 0.8, {Size = UDim2.new(0, 220, 0, 260)}, Enum.EasingStyle.Elastic)
-
-    -- DRAGGING
-    local dragging, dragStart, startPos
-    MainFrame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true; dragStart = input.Position; startPos = MainFrame.Position
-        end
-    end)
-    UIS.InputChanged:Connect(function(input)
-        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            local delta = input.Position - dragStart
-            Ani(MainFrame, 0.1, {Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)})
-        end
-    end)
-    UIS.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end end)
-
-    -- CONTAINER
-    local Container = Instance.new("ScrollingFrame", MainFrame)
-    Container.Position = UDim2.new(0, 10, 0, 52)
-    Container.Size = UDim2.new(1, -20, 1, -65)
-    Container.BackgroundTransparency = 1
-    Container.ScrollBarThickness = 0
-    Container.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    local MainGui = Instance.new("ScreenGui", CoreGui); MainGui.Name = "GG_Universal_V5"
     
-    local Layout = Instance.new("UIListLayout", Container)
-    Layout.Padding = UDim.new(0, 10)
-    Layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    local MainFrame = Instance.new("Frame", MainGui)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(8, 8, 20)
+    MainFrame.Position = UDim2.new(0.5, -120, 0.4, -90)
+    MainFrame.Size = UDim2.new(0, 0, 0, 0) -- Start 0 for Elastic
+    MainFrame.ClipsDescendants = true; MainFrame.Active = true; MainFrame.Draggable = true
+    Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 15)
+    local MainStroke = Instance.new("UIStroke", MainFrame); MainStroke.Thickness = 2; MainStroke.Color = Color3.fromRGB(255, 0, 60)
 
-    -- [[ FLOATING TOGGLE ICON - IMAGE FIXED ]]
-    local ToggleGui = Instance.new("ScreenGui", CoreGui)
-    ToggleGui.Name = "GGToggle_Final"
-    
+    -- [[ OPENING ANIMATION ]]
+    Ani(MainFrame, 0.8, {Size = UDim2.new(0, 240, 0, 200)}, Enum.EasingStyle.Elastic)
+
+    -- Floating Toggle Button
+    local ToggleGui = Instance.new("ScreenGui", CoreGui); ToggleGui.Name = "GG_Toggle_V5"
     local TglBtn = Instance.new("ImageButton", ToggleGui)
-    TglBtn.Size = UDim2.new(0, 55, 0, 55)
-    TglBtn.Position = UDim2.new(0, 20, 0.5, -27)
-    TglBtn.BackgroundColor3 = Color3.fromRGB(8, 8, 20)
+    TglBtn.Size = UDim2.new(0, 48, 0, 48); TglBtn.Position = UDim2.new(0, 15, 0.5, -24); TglBtn.BackgroundColor3 = Color3.fromRGB(10, 10, 30); TglBtn.Draggable = true
+    TglBtn.Image = "https://www.roblox.com/asset-thumbnail/image?assetId=126880062074667&width=420&height=420&format=png"
+    Instance.new("UICorner", TglBtn).CornerRadius = UDim.new(0, 12); Instance.new("UIStroke", TglBtn).Color = Color3.fromRGB(255, 0, 60)
     
-    -- IMAGE FIX: Direct Thumbnail Link for 100% Load
-    local imgID = "126880062074667"
-    TglBtn.Image = "https://www.roblox.com/asset-thumbnail/image?assetId=" .. imgID .. "&width=420&height=420&format=png"
-    
-    TglBtn.Draggable = true
-    Instance.new("UICorner", TglBtn).CornerRadius = UDim.new(0, 15)
-    local TS_Stroke = Instance.new("UIStroke", TglBtn)
-    TS_Stroke.Thickness = 2.5
-    TS_Stroke.Color = Color3.fromRGB(255, 0, 60)
-
     TglBtn.MouseButton1Click:Connect(function()
         if MainFrame.Visible then
             Ani(MainFrame, 0.4, {Size = UDim2.new(0, 0, 0, 0)}, Enum.EasingStyle.Back)
-            task.wait(0.4)
-            MainFrame.Visible = false
+            task.wait(0.4); MainFrame.Visible = false
         else
             MainFrame.Visible = true
-            Ani(MainFrame, 0.5, {Size = UDim2.new(0, 220, 0, 260)}, Enum.EasingStyle.Elastic)
+            Ani(MainFrame, 0.5, {Size = UDim2.new(0, 240, 0, 200)}, Enum.EasingStyle.Elastic)
         end
     end)
 
-    -- [[ MODULE OBJECT ]]
-    local Window = {}
+    local TabBar = Instance.new("Frame", MainFrame)
+    TabBar.Size = UDim2.new(1, 0, 0, 32); TabBar.BackgroundColor3 = Color3.fromRGB(15, 15, 35)
+    Instance.new("UICorner", TabBar).CornerRadius = UDim.new(0, 15)
+    
+    local X = Instance.new("TextButton", TabBar); X.Size = UDim2.new(0, 32, 1, 0); X.Position = UDim2.new(1, -32, 0, 0); X.Text = "X"; X.TextColor3 = Color3.new(1, 0, 0); X.BackgroundTransparency = 1; X.TextSize = 16
+    X.MouseButton1Click:Connect(function() Ani(MainFrame, 0.4, {Size = UDim2.new(0, 0, 0, 0)}, Enum.EasingStyle.Back); task.wait(0.4); MainFrame.Visible = false end)
 
-    -- 1. BUTTON (With Ripple)
-    function Window:CreateButton(text, callback)
-        local Btn = Instance.new("TextButton", Container)
-        Btn.Size = UDim2.new(1, 0, 0, 40)
-        Btn.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
-        Btn.Text = "» " .. text
-        Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        Btn.Font = Enum.Font.GothamBold
-        Btn.TextSize = 13
-        Btn.ClipsDescendants = true
-        Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 10)
+    local Pages = Instance.new("Frame", MainFrame)
+    Pages.Size = UDim2.new(1, -10, 1, -75); Pages.Position = UDim2.new(0, 5, 0, 70); Pages.BackgroundTransparency = 1
+
+    local TabScroll = Instance.new("ScrollingFrame", MainFrame)
+    TabScroll.Size = UDim2.new(1, -10, 0, 28); TabScroll.Position = UDim2.new(0, 5, 0, 38); TabScroll.BackgroundTransparency = 1; TabScroll.ScrollBarThickness = 0; TabScroll.CanvasSize = UDim2.new(2, 0, 0, 0)
+    Instance.new("UIListLayout", TabScroll).FillDirection = "Horizontal"; Instance.new("UIListLayout", TabScroll).Padding = UDim.new(0, 5)
+
+    local Tabs = {}
+    local first = true
+
+    function Tabs:CreateTab(name)
+        local Page = Instance.new("ScrollingFrame", Pages)
+        Page.Size = UDim2.new(1, 0, 1, 0); Page.Visible = first; Page.BackgroundTransparency = 1; Page.ScrollBarThickness = 0; Page.AutomaticCanvasSize = "Y"
+        Instance.new("UIListLayout", Page).Padding = UDim.new(0, 8); Instance.new("UIListLayout", Page).HorizontalAlignment = "Center"
         
-        local BStroke = Instance.new("UIStroke", Btn)
-        BStroke.Color = Color3.fromRGB(255, 0, 60)
-        BStroke.Transparency = 0.6
+        local TBtn = Instance.new("TextButton", TabScroll)
+        TBtn.Size = UDim2.new(0, 70, 1, 0); TBtn.BackgroundColor3 = first and Color3.fromRGB(255, 0, 60) or Color3.fromRGB(30, 30, 50)
+        TBtn.Text = name; TBtn.TextColor3 = Color3.new(1, 1, 1); TBtn.Font = "GothamBold"; TBtn.TextSize = 11; Instance.new("UICorner", TBtn)
+        
+        TBtn.MouseButton1Click:Connect(function()
+            for _, p in pairs(Pages:GetChildren()) do p.Visible = false end
+            for _, t in pairs(TabScroll:GetChildren()) do if t:IsA("TextButton") then Ani(t, 0.3, {BackgroundColor3 = Color3.fromRGB(30, 30, 50)}) end end
+            Page.Visible = true; Ani(TBtn, 0.3, {BackgroundColor3 = Color3.fromRGB(255, 0, 60)})
+        end)
+        
+        first = false
+        local Components = {}
 
-        Btn.MouseButton1Click:Connect(function()
-            -- Ripple Effect
-            local Circle = Instance.new("Frame", Btn)
-            Circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            Circle.BackgroundTransparency = 0.8
-            Circle.Position = UDim2.new(0, Mouse.X - Btn.AbsolutePosition.X, 0, Mouse.Y - Btn.AbsolutePosition.Y)
-            Instance.new("UICorner", Circle).CornerRadius = UDim.new(1, 0)
-            Circle:TweenSizeAndPosition(UDim2.new(0, 250, 0, 250), UDim2.new(0, Mouse.X - Btn.AbsolutePosition.X - 125, 0, Mouse.Y - Btn.AbsolutePosition.Y - 125), "Out", "Quart", 0.4)
-            Ani(Circle, 0.4, {BackgroundTransparency = 1})
-            delay(0.4, function() Circle:Destroy() end)
+        -- [[ COMPONENTS WITH ANIMATIONS ]]
+
+        function Components:CreateButton(text, cb)
+            local b = Instance.new("TextButton", Page); b.Size = UDim2.new(1, -5, 0, 38); b.BackgroundColor3 = Color3.fromRGB(30, 30, 50); b.Text = text; b.TextColor3 = Color3.new(1, 1, 1); b.Font = "GothamBold"; b.ClipsDescendants = true; Instance.new("UICorner", b)
+            local S = Instance.new("UIStroke", b); S.Color = Color3.fromRGB(255, 0, 60); S.Transparency = 0.6
             
-            callback()
-        end)
+            b.MouseButton1Down:Connect(function() Ani(b, 0.1, {Size = UDim2.new(1, -15, 0, 34)}) end)
+            b.MouseButton1Up:Connect(function() Ani(b, 0.1, {Size = UDim2.new(1, -5, 0, 38)}) end)
+
+            b.MouseButton1Click:Connect(function()
+                local c = Instance.new("Frame", b); c.BackgroundColor3 = Color3.new(1, 1, 1); c.BackgroundTransparency = 0.8; c.Position = UDim2.new(0, Mouse.X-b.AbsolutePosition.X, 0, Mouse.Y-b.AbsolutePosition.Y); Instance.new("UICorner", c).CornerRadius = UDim.new(1, 0)
+                c:TweenSizeAndPosition(UDim2.new(0, 250, 0, 250), UDim2.new(0, Mouse.X-b.AbsolutePosition.X-125, 0, Mouse.Y-b.AbsolutePosition.Y-125), "Out", "Quart", 0.4)
+                task.delay(0.4, function() c:Destroy() end)
+                cb()
+            end)
+        end
+
+        function Components:CreateToggle(text, cb)
+            local t = Instance.new("TextButton", Page); t.Size = UDim2.new(1, -5, 0, 38); t.BackgroundColor3 = Color3.fromRGB(30, 30, 50); t.Text = "  "..text; t.TextColor3 = Color3.new(1, 1, 1); t.TextXAlignment = "Left"; t.Font = "GothamBold"; Instance.new("UICorner", t)
+            local ind = Instance.new("Frame", t); ind.Size = UDim2.new(0, 30, 0, 16); ind.Position = UDim2.new(1, -40, 0.5, -8); ind.BackgroundColor3 = Color3.fromRGB(50, 0, 0); Instance.new("UICorner", ind).CornerRadius = UDim.new(1, 0)
+            local dot = Instance.new("Frame", ind); dot.Size = UDim2.new(0, 12, 0, 12); dot.Position = UDim2.new(0, 2, 0.5, -6); dot.BackgroundColor3 = Color3.new(1, 1, 1); Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
+            local s = false
+            t.MouseButton1Click:Connect(function()
+                s = not s; Ani(dot, 0.3, {Position = s and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6)}); Ani(ind, 0.3, {BackgroundColor3 = s and Color3.fromRGB(0, 255, 100) or Color3.fromRGB(50, 0, 0)})
+                cb(s)
+            end)
+        end
+
+        function Components:CreateSlider(text, min, max, cb)
+            local s = Instance.new("Frame", Page); s.Size = UDim2.new(1, -5, 0, 48); s.BackgroundColor3 = Color3.fromRGB(30, 30, 50); Instance.new("UICorner", s)
+            local tl = Instance.new("TextLabel", s); tl.Text = "  "..text; tl.Size = UDim2.new(1, 0, 0, 20); tl.TextColor3 = Color3.new(1, 1, 1); tl.BackgroundTransparency = 1; tl.TextXAlignment = "Left"; tl.Font = "GothamBold"
+            local bar = Instance.new("Frame", s); bar.Size = UDim2.new(0.9, 0, 0, 5); bar.Position = UDim2.new(0.05, 0, 0.75, 0); bar.BackgroundColor3 = Color3.fromRGB(15, 15, 30); Instance.new("UICorner", bar)
+            local fill = Instance.new("Frame", bar); fill.Size = UDim2.new(0, 0, 1, 0); fill.BackgroundColor3 = Color3.fromRGB(255, 0, 60); Instance.new("UICorner", fill)
+            local vl = Instance.new("TextLabel", s); vl.Size = UDim2.new(1, -15, 0, 20); vl.BackgroundTransparency = 1; vl.Text = tostring(min); vl.TextColor3 = Color3.new(0, 1, 1); vl.TextXAlignment = "Right"
+            
+            local move = false
+            local function update()
+                local m = math.clamp((UIS:GetMouseLocation().X - bar.AbsolutePosition.X) / bar.AbsoluteSize.X, 0, 1)
+                Ani(fill, 0.1, {Size = UDim2.new(m, 0, 1, 0)})
+                local v = math.floor(min + (max - min) * m)
+                vl.Text = tostring(v); cb(v)
+            end
+            bar.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then move = true update() end end)
+            UIS.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then move = false end end)
+            UIS.InputChanged:Connect(function(i) if move and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then update() end end)
+        end
+
+        function Components:CreateTextBox(placeholder, cb)
+            local b = Instance.new("TextBox", Page); b.Size = UDim2.new(1, -5, 0, 38); b.BackgroundColor3 = Color3.fromRGB(15, 15, 25); b.PlaceholderText = placeholder; b.Text = ""; b.TextColor3 = Color3.new(1, 1, 1); b.Font = "GothamMedium"; Instance.new("UICorner", b)
+            local S = Instance.new("UIStroke", b); S.Color = Color3.fromRGB(0, 255, 255); S.Transparency = 0.7
+            b.Focused:Connect(function() Ani(S, 0.3, {Transparency = 0, Thickness = 2}) end)
+            b.FocusLost:Connect(function(e) Ani(S, 0.3, {Transparency = 0.7, Thickness = 1}) if e then cb(b.Text) end end)
+        end
+
+        return Components
     end
 
-    -- 2. TOGGLE
-    function Window:CreateToggle(text, callback)
-        local Tgl = Instance.new("TextButton", Container)
-        Tgl.Size = UDim2.new(1, 0, 0, 40)
-        Tgl.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
-        Tgl.Text = "   " .. text
-        Tgl.TextColor3 = Color3.fromRGB(255, 255, 255)
-        Tgl.TextXAlignment = Enum.TextXAlignment.Left
-        Tgl.Font = Enum.Font.GothamMedium
-        Instance.new("UICorner", Tgl).CornerRadius = UDim.new(0, 10)
-
-        local Track = Instance.new("Frame", Tgl)
-        Track.Size = UDim2.new(0, 36, 0, 18)
-        Track.Position = UDim2.new(1, -48, 0.5, -9)
-        Track.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
-        Instance.new("UICorner", Track).CornerRadius = UDim.new(1, 0)
-
-        local Knob = Instance.new("Frame", Track)
-        Knob.Size = UDim2.new(0, 14, 0, 14)
-        Knob.Position = UDim2.new(0, 2, 0.5, -7)
-        Knob.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
-        Instance.new("UICorner", Knob).CornerRadius = UDim.new(1, 0)
-
-        local state = false
-        Tgl.MouseButton1Click:Connect(function()
-            state = not state
-            Ani(Knob, 0.3, {Position = state and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)})
-            Ani(Track, 0.3, {BackgroundColor3 = state and Color3.fromRGB(255, 0, 60) or Color3.fromRGB(40, 40, 60)})
-            callback(state)
-        end)
-    end
-
-    -- 3. TEXTBOX
-    function Window:CreateTextBox(placeholder, callback)
-        local Box = Instance.new("TextBox", Container)
-        Box.Size = UDim2.new(1, 0, 0, 40)
-        Box.BackgroundColor3 = Color3.fromRGB(12, 12, 28)
-        Box.PlaceholderText = placeholder
-        Box.Text = ""
-        Box.TextColor3 = Color3.fromRGB(0, 255, 255)
-        Box.Font = Enum.Font.Code
-        Instance.new("UICorner", Box).CornerRadius = UDim.new(0, 10)
-        
-        local S = Instance.new("UIStroke", Box)
-        S.Color = Color3.fromRGB(0, 255, 255)
-        S.Transparency = 0.7
-        
-        Box.FocusLost:Connect(function(enter) if enter then callback(Box.Text) end end)
-    end
-
-    -- 4. DESTROY
-    function Window:Destroy()
+    function Tabs:Destroy()
         Ani(MainFrame, 0.4, {Size = UDim2.new(0, 0, 0, 0)}, Enum.EasingStyle.Back)
-        task.wait(0.4)
-        MainGui:Destroy()
-        ToggleGui:Destroy()
+        task.wait(0.4); MainGui:Destroy(); ToggleGui:Destroy()
     end
 
-    return Window
+    return Tabs
 end
 
 return CyberLib
