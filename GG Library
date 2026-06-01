@@ -1,21 +1,15 @@
--- [[ GG LIBRARY - ULTIMATE IMPROVED EDITION ]] --
--- Theme: Original Dark Blue + Intense Neon Red
--- Status: Fixed & Optimized for Global Execution (Image Fix)
+-- [[ GG LIBRARY V3 - OFFICIAL MODULE ]] --
+-- Theme: Cyberpunk (Dark Blue & Neon Red)
+-- Features: Elastic Animations, Ripple Effects, Asset Fix
+
+local CyberLib = {}
 
 local UIS = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 local TS = game:GetService("TweenService")
 local Player = game.Players.LocalPlayer
 local Mouse = Player:GetMouse()
-
--- Cleanup: Purani files ko delete karo
-for _, v in pairs(CoreGui:GetChildren()) do
-    if v.Name == "GGLib_Final" or v.Name == "GGToggle_Final" then
-        v:Destroy()
-    end
-end
-
-local CyberLib = {}
+local ContentProvider = game:GetService("ContentProvider")
 
 -- Utility: Advanced Tween Engine
 local function Ani(obj, time, prop, style)
@@ -26,24 +20,31 @@ local function Ani(obj, time, prop, style)
 end
 
 function CyberLib:CreateWindow(hubName)
+    -- Cleanup of previous instances
+    for _, v in pairs(CoreGui:GetChildren()) do
+        if v.Name == "GGLib_Final" or v.Name == "GGToggle_Final" then
+            v:Destroy()
+        end
+    end
+
     local MainGui = Instance.new("ScreenGui")
     MainGui.Name = "GGLib_Final"
     MainGui.Parent = CoreGui
+    MainGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
     -- MAIN FRAME
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
     MainFrame.Parent = MainGui
-    MainFrame.BackgroundColor3 = Color3.fromRGB(6, 6, 16) -- Ultra Deep Blue
+    MainFrame.BackgroundColor3 = Color3.fromRGB(5, 5, 12)
     MainFrame.Position = UDim2.new(0.5, -110, 0.4, -115)
-    MainFrame.Size = UDim2.new(0, 0, 0, 0) -- For Elastic Opening
+    MainFrame.Size = UDim2.new(0, 0, 0, 0) -- Starts at 0 for Elastic Animation
     MainFrame.ClipsDescendants = true
     MainFrame.Active = true
 
     local MainCorner = Instance.new("UICorner", MainFrame)
     MainCorner.CornerRadius = UDim.new(0, 18)
 
-    -- NEON RED GLOW BORDER
     local MainStroke = Instance.new("UIStroke", MainFrame)
     MainStroke.Thickness = 3
     MainStroke.Color = Color3.fromRGB(255, 0, 60) -- Neon Red
@@ -53,18 +54,18 @@ function CyberLib:CreateWindow(hubName)
     local Title = Instance.new("TextLabel")
     Title.Size = UDim2.new(1, 0, 0, 45)
     Title.BackgroundColor3 = Color3.fromRGB(12, 12, 28)
-    Title.Text = "[ " .. hubName .. " ]"
+    Title.Text = "» " .. hubName .. " «"
     Title.TextColor3 = Color3.fromRGB(0, 255, 255) -- Cyan
     Title.Font = Enum.Font.RobotoMono
     Title.TextSize = 18
     Title.Parent = MainFrame
     Instance.new("UICorner", Title).CornerRadius = UDim.new(0, 18)
 
-    -- Opening Animation (Elastic Pop)
-    Ani(MainFrame, 0.7, {Size = UDim2.new(0, 220, 0, 250)}, Enum.EasingStyle.Elastic)
+    -- Elastic Opening
+    Ani(MainFrame, 0.8, {Size = UDim2.new(0, 220, 0, 260)}, Enum.EasingStyle.Elastic)
 
-    -- DRAGGING (Smooth Weighted)
-    local dragging, dragInput, dragStart, startPos
+    -- DRAGGING
+    local dragging, dragStart, startPos
     MainFrame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true; dragStart = input.Position; startPos = MainFrame.Position
@@ -73,12 +74,12 @@ function CyberLib:CreateWindow(hubName)
     UIS.InputChanged:Connect(function(input)
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position - dragStart
-            Ani(MainFrame, 0.15, {Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)})
+            Ani(MainFrame, 0.1, {Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)})
         end
     end)
     UIS.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end end)
 
-    -- CONTAINER (Scrolling)
+    -- CONTAINER
     local Container = Instance.new("ScrollingFrame", MainFrame)
     Container.Position = UDim2.new(0, 10, 0, 52)
     Container.Size = UDim2.new(1, -20, 1, -65)
@@ -87,19 +88,21 @@ function CyberLib:CreateWindow(hubName)
     Container.AutomaticCanvasSize = Enum.AutomaticSize.Y
     
     local Layout = Instance.new("UIListLayout", Container)
-    Layout.Padding = UDim.new(0, 12)
+    Layout.Padding = UDim.new(0, 10)
     Layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
-    -- [[ FLOATING TOGGLE ICON (IMAGE LINK FIXED) ]]
+    -- [[ FLOATING TOGGLE ICON - IMAGE FIXED ]]
     local ToggleGui = Instance.new("ScreenGui", CoreGui)
     ToggleGui.Name = "GGToggle_Final"
+    
     local TglBtn = Instance.new("ImageButton", ToggleGui)
     TglBtn.Size = UDim2.new(0, 55, 0, 55)
     TglBtn.Position = UDim2.new(0, 20, 0.5, -27)
     TglBtn.BackgroundColor3 = Color3.fromRGB(8, 8, 20)
     
-    -- Wapas wahi proper web link daal diya jo asset ki image fetch karega
-    TglBtn.Image = "https://www.roblox.com/asset-thumbnail/image?assetId=126880062074667&width=420&height=420&format=png"
+    -- IMAGE FIX: Direct Thumbnail Link for 100% Load
+    local imgID = "126880062074667"
+    TglBtn.Image = "https://www.roblox.com/asset-thumbnail/image?assetId=" .. imgID .. "&width=420&height=420&format=png"
     
     TglBtn.Draggable = true
     Instance.new("UICorner", TglBtn).CornerRadius = UDim.new(0, 15)
@@ -109,22 +112,23 @@ function CyberLib:CreateWindow(hubName)
 
     TglBtn.MouseButton1Click:Connect(function()
         if MainFrame.Visible then
-            Ani(MainFrame, 0.4, {Size = UDim2.new(0, 0, 0, 0)})
-            delay(0.4, function() MainFrame.Visible = false end)
+            Ani(MainFrame, 0.4, {Size = UDim2.new(0, 0, 0, 0)}, Enum.EasingStyle.Back)
+            task.wait(0.4)
+            MainFrame.Visible = false
         else
             MainFrame.Visible = true
-            Ani(MainFrame, 0.5, {Size = UDim2.new(0, 220, 0, 250)}, Enum.EasingStyle.Back)
+            Ani(MainFrame, 0.5, {Size = UDim2.new(0, 220, 0, 260)}, Enum.EasingStyle.Elastic)
         end
     end)
 
-    -- [[ WINDOW OBJECT FOR CONTROLS ]]
-    local WindowObj = {}
+    -- [[ MODULE OBJECT ]]
+    local Window = {}
 
-    -- 1. BUTTON
-    function WindowObj:CreateButton(text, callback)
+    -- 1. BUTTON (With Ripple)
+    function Window:CreateButton(text, callback)
         local Btn = Instance.new("TextButton", Container)
         Btn.Size = UDim2.new(1, 0, 0, 40)
-        Btn.BackgroundColor3 = Color3.fromRGB(22, 22, 44)
+        Btn.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
         Btn.Text = "» " .. text
         Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
         Btn.Font = Enum.Font.GothamBold
@@ -134,9 +138,10 @@ function CyberLib:CreateWindow(hubName)
         
         local BStroke = Instance.new("UIStroke", Btn)
         BStroke.Color = Color3.fromRGB(255, 0, 60)
-        BStroke.Transparency = 0.5
+        BStroke.Transparency = 0.6
 
         Btn.MouseButton1Click:Connect(function()
+            -- Ripple Effect
             local Circle = Instance.new("Frame", Btn)
             Circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             Circle.BackgroundTransparency = 0.8
@@ -151,10 +156,10 @@ function CyberLib:CreateWindow(hubName)
     end
 
     -- 2. TOGGLE
-    function WindowObj:CreateToggle(text, callback)
+    function Window:CreateToggle(text, callback)
         local Tgl = Instance.new("TextButton", Container)
         Tgl.Size = UDim2.new(1, 0, 0, 40)
-        Tgl.BackgroundColor3 = Color3.fromRGB(22, 22, 44)
+        Tgl.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
         Tgl.Text = "   " .. text
         Tgl.TextColor3 = Color3.fromRGB(255, 255, 255)
         Tgl.TextXAlignment = Enum.TextXAlignment.Left
@@ -183,7 +188,7 @@ function CyberLib:CreateWindow(hubName)
     end
 
     -- 3. TEXTBOX
-    function WindowObj:CreateTextBox(placeholder, callback)
+    function Window:CreateTextBox(placeholder, callback)
         local Box = Instance.new("TextBox", Container)
         Box.Size = UDim2.new(1, 0, 0, 40)
         Box.BackgroundColor3 = Color3.fromRGB(12, 12, 28)
@@ -197,29 +202,18 @@ function CyberLib:CreateWindow(hubName)
         S.Color = Color3.fromRGB(0, 255, 255)
         S.Transparency = 0.7
         
-        Box.Focused:Connect(function() Ani(S, 0.3, {Transparency = 0, Thickness = 2}) end)
-        Box.FocusLost:Connect(function(enter) 
-            Ani(S, 0.3, {Transparency = 0.7, Thickness = 1})
-            if enter then callback(Box.Text) end 
-        end)
+        Box.FocusLost:Connect(function(enter) if enter then callback(Box.Text) end end)
     end
 
-    -- 4. CLEAN EX-DESTROY SYSTEM
-    function WindowObj:Destroy()
+    -- 4. DESTROY
+    function Window:Destroy()
         Ani(MainFrame, 0.4, {Size = UDim2.new(0, 0, 0, 0)}, Enum.EasingStyle.Back)
         task.wait(0.4)
         MainGui:Destroy()
         ToggleGui:Destroy()
     end
 
-    -- Shorthand names support
-    WindowObj.Button = WindowObj.CreateButton
-    WindowObj.Toggle = WindowObj.CreateToggle
-    WindowObj.TextBox = WindowObj.CreateTextBox
-
-    return WindowObj
+    return Window
 end
 
-CyberLib.Window = CyberLib.CreateWindow
 return CyberLib
-
