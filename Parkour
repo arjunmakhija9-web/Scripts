@@ -1,0 +1,306 @@
+--[[
+    PROJECT: TROLL-VERSE - PERFECT PLAYABLE EDITION
+    - 5 Jumps = 1 Stage Checkpoint
+    - Clean, wide turns only happen every 3 Stages
+    - Perfectly balanced gaps (100% playable)
+    - Galaxy Skybox & Mobile UI Included
+]]
+
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local Lighting = game:GetService("Lighting")
+local CoreGui = game:GetService("CoreGui")
+
+local LocalPlayer = Players.LocalPlayer
+
+-- GLOBAL STATE
+_G.Wins = _G.Wins or 0
+_G.CurrentStageNumber = 0
+_G.GodMode = false
+_G.LastCheckpointCFrame = CFrame.new(0, 50, 0)
+
+-----------------------------------------------------------
+-- 1. SYSTEM WIPE & SKYBOX
+-----------------------------------------------------------
+if Workspace:FindFirstChild("TrollVerseMap") then
+    Workspace.TrollVerseMap:Destroy()
+end
+local MapFolder = Instance.new("Folder", Workspace)
+MapFolder.Name = "TrollVerseMap"
+
+local function CleanTrash()
+    for _, obj in pairs(Workspace:GetChildren()) do
+        if obj.Name ~= LocalPlayer.Name and not obj:IsA("Camera") and not obj:IsA("Terrain") and obj.Name ~= "TrollVerseMap" then
+            pcall(function() obj:Destroy() end)
+        end
+    end
+end
+CleanTrash()
+
+-- Visual Atmosphere & Galaxy Sky
+Lighting.ClockTime = 14
+Lighting.Brightness = 2
+Lighting.OutdoorAmbient = Color3.fromRGB(100, 80, 120)
+
+local Sky = Instance.new("Sky", Lighting)
+Sky.SkyboxBk = "rbxassetid://159454299"
+Sky.SkyboxDn = "rbxassetid://159454296"
+Sky.SkyboxFt = "rbxassetid://159454293"
+Sky.SkyboxLf = "rbxassetid://159454286"
+Sky.SkyboxRt = "rbxassetid://159454300"
+Sky.SkyboxUp = "rbxassetid://159454288"
+Sky.StarCount = 5000
+
+-----------------------------------------------------------
+-- 2. UTILITIES & INSTANT-RETRY
+-----------------------------------------------------------
+local function CreatePart(cf, size, color, mat)
+    local p = Instance.new("Part")
+    p.CFrame = cf
+    p.Size = size
+    p.BrickColor = BrickColor.new(color)
+    p.Material = mat or Enum.Material.SmoothPlastic
+    p.Anchored = true
+    p.Parent = MapFolder
+    return p
+end
+
+local isRespawning = false
+local function AddKill(part)
+    part.Touched:Connect(function(hit)
+        local char = hit.Parent
+        if char.Name == LocalPlayer.Name and not isRespawning then
+            if not _G.GodMode then
+                isRespawning = true
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    -- Respawn instantly, facing the correct direction!
+                    hrp.CFrame = _G.LastCheckpointCFrame * CFrame.new(0, 4, 0)
+                end
+                task.wait(0.1)
+                isRespawning = false
+            end
+        end
+    end)
+end
+
+-----------------------------------------------------------
+-- 3. MOBILE UI
+-----------------------------------------------------------
+local GuiName = "TrollEngineMasterUI"
+local oldGui = LocalPlayer.PlayerGui:FindFirstChild(GuiName) or CoreGui:FindFirstChild(GuiName)
+if oldGui then oldGui:Destroy() end
+
+local Gui = Instance.new("ScreenGui", LocalPlayer.PlayerGui)
+Gui.Name = GuiName
+Gui.ResetOnSpawn = false
+
+-- HUD (Lowered for Mobile)
+local HUD = Instance.new("Frame", Gui)
+HUD.Size = UDim2.new(0, 200, 0, 80)
+HUD.Position = UDim2.new(0, 10, 0, 120) 
+HUD.BackgroundTransparency = 1
+
+local StageLabel = Instance.new("TextLabel", HUD)
+StageLabel.Size = UDim2.new(1, 0, 0.5, 0)
+StageLabel.Text = "STAGE: 0"
+StageLabel.TextColor3 = Color3.new(1, 1, 1)
+StageLabel.Font = Enum.Font.GothamBlack
+StageLabel.TextSize = 25
+StageLabel.TextXAlignment = Enum.TextXAlignment.Left
+StageLabel.BackgroundTransparency = 1
+Instance.new("UIStroke", StageLabel).Thickness = 2
+
+local WinLabel = Instance.new("TextLabel", HUD)
+WinLabel.Position = UDim2.new(0, 0, 0.5, 0)
+WinLabel.Size = UDim2.new(1, 0, 0.5, 0)
+WinLabel.Text = "WINS: " .. _G.Wins
+WinLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+WinLabel.Font = Enum.Font.GothamBlack
+WinLabel.TextSize = 20
+WinLabel.TextXAlignment = Enum.TextXAlignment.Left
+WinLabel.BackgroundTransparency = 1
+Instance.new("UIStroke", WinLabel).Thickness = 2
+
+-- SHOP MENU
+local ShopFrame = Instance.new("Frame", Gui)
+ShopFrame.Size = UDim2.new(0, 300, 0, 400)
+ShopFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
+ShopFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+ShopFrame.Visible = false
+Instance.new("UICorner", ShopFrame).CornerRadius = UDim.new(0, 15)
+
+local ShopTitle = Instance.new("TextLabel", ShopFrame)
+ShopTitle.Size = UDim2.new(1, 0, 0, 50)
+ShopTitle.Text = "MERCHANT SHOP"
+ShopTitle.TextColor3 = Color3.new(1, 1, 1)
+ShopTitle.Font = Enum.Font.GothamBlack
+ShopTitle.TextSize = 20
+ShopTitle.BackgroundTransparency = 1
+
+local CloseBtn = Instance.new("TextButton", ShopFrame)
+CloseBtn.Size = UDim2.new(0, 35, 0, 35)
+CloseBtn.Position = UDim2.new(1, -45, 0, 10)
+CloseBtn.Text = "X"
+CloseBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+CloseBtn.TextColor3 = Color3.new(1, 1, 1)
+CloseBtn.Font = Enum.Font.GothamBold
+Instance.new("UICorner", CloseBtn)
+CloseBtn.MouseButton1Click:Connect(function() ShopFrame.Visible = false end)
+
+local function AddShopItem(name, cost, posY, color, func)
+    local btn = Instance.new("TextButton", ShopFrame)
+    btn.Size = UDim2.new(0.9, 0, 0, 50)
+    btn.Position = UDim2.new(0.05, 0, posY, 0)
+    btn.Text = name .. " (" .. cost .. " Wins)"
+    btn.BackgroundColor3 = color
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.Font = Enum.Font.GothamBold
+    Instance.new("UICorner", btn)
+    
+    btn.MouseButton1Click:Connect(function()
+        if _G.Wins >= cost then
+            _G.Wins -= cost
+            WinLabel.Text = "WINS: " .. _G.Wins
+            func()
+            btn.Text = "APPLIED!"
+            task.wait(1)
+            btn.Text = name .. " (" .. cost .. " Wins)"
+        end
+    end)
+end
+
+AddShopItem("Speed Coil", 1, 0.15, Color3.fromRGB(0, 120, 200), function() LocalPlayer.Character.Humanoid.WalkSpeed = 50 end)
+AddShopItem("Gravity Coil", 2, 0.30, Color3.fromRGB(120, 0, 200), function() LocalPlayer.Character.Humanoid.JumpPower = 100 end)
+AddShopItem("God Mode", 5, 0.45, Color3.fromRGB(200, 0, 0), function() _G.GodMode = true end)
+
+-----------------------------------------------------------
+-- 4. LOBBY & MERCHANT
+-----------------------------------------------------------
+local LobbyCF = CFrame.new(0, 50, 0)
+local Lobby = CreatePart(LobbyCF, Vector3.new(40, 2, 40), "Dark stone", Enum.Material.SmoothPlastic)
+_G.LastCheckpointCFrame = LobbyCF
+
+-- Borders
+CreatePart(LobbyCF * CFrame.new(0, 0, 20), Vector3.new(40, 3, 1), "Cyan", Enum.Material.Neon)
+CreatePart(LobbyCF * CFrame.new(0, 0, -20), Vector3.new(40, 3, 1), "Cyan", Enum.Material.Neon)
+CreatePart(LobbyCF * CFrame.new(20, 0, 0), Vector3.new(1, 3, 40), "Cyan", Enum.Material.Neon)
+CreatePart(LobbyCF * CFrame.new(-20, 0, 0), Vector3.new(1, 3, 40), "Cyan", Enum.Material.Neon)
+
+-- Merchant NPC
+CreatePart(LobbyCF * CFrame.new(0, 1, -15), Vector3.new(6, 1, 6), "White", Enum.Material.Neon)
+local MBody = CreatePart(LobbyCF * CFrame.new(0, 3, -15), Vector3.new(3, 4, 2), "Deep blue", Enum.Material.Neon)
+CreatePart(LobbyCF * CFrame.new(0, 6, -15), Vector3.new(1.5, 1.5, 1.5), "Pastel brown", Enum.Material.SmoothPlastic)
+
+local Prompt = Instance.new("ProximityPrompt", MBody)
+Prompt.ActionText = "Trade"
+Prompt.ObjectText = "Merchant"
+Prompt.Triggered:Connect(function() ShopFrame.Visible = true end)
+
+-----------------------------------------------------------
+-- 5. PARKOUR ENGINE (PERFECT SPACING)
+-----------------------------------------------------------
+local CursorCF = LobbyCF * CFrame.new(0, 0, 20) -- Start at the edge of the lobby
+local void = CreatePart(CFrame.new(0, 0, 0), Vector3.new(100000, 10, 100000), "Really black", Enum.Material.Neon)
+AddKill(void)
+
+local Generators = {
+    function(cf) -- Normal Jump (Easy)
+        CreatePart(cf * CFrame.new(0, 0, 6), Vector3.new(8, 1, 8), "White")
+        return cf * CFrame.new(0, 0, 12)
+    end,
+    function(cf) -- Lava Strip (Fair size)
+        CreatePart(cf * CFrame.new(0, 0, 6), Vector3.new(12, 1, 12), "White")
+        local l = CreatePart(cf * CFrame.new(0, 0.6, 6), Vector3.new(12, 0.2, 3), "Bright red", Enum.Material.Neon)
+        AddKill(l)
+        return cf * CFrame.new(0, 0, 12)
+    end,
+    function(cf) -- Thin Beam
+        CreatePart(cf * CFrame.new(0, 0, 8), Vector3.new(2, 1, 16), "Cyan")
+        return cf * CFrame.new(0, 0, 16)
+    end,
+    function(cf) -- Glass Steps (Close together)
+        for i=1, 3 do
+            local g = CreatePart(cf * CFrame.new(0, 0, i*6), Vector3.new(4, 0.5, 4), "Cyan", Enum.Material.Glass)
+            g.Touched:Connect(function() task.wait(0.2) g.CanCollide = false g.Transparency = 1 task.wait(2) g.CanCollide = true g.Transparency = 0 end)
+        end
+        return cf * CFrame.new(0, 0, 20)
+    end,
+    function(cf) -- Spinner (Safe gap)
+        CreatePart(cf * CFrame.new(0, 0, 6), Vector3.new(10, 1, 10), "Black")
+        local bar = CreatePart(cf * CFrame.new(0, 2, 6), Vector3.new(14, 1, 1), "Bright red", Enum.Material.Neon)
+        AddKill(bar)
+        spawn(function() while bar.Parent do bar.CFrame *= CFrame.Angles(0, 0.05, 0) task.wait() end end)
+        return cf * CFrame.new(0, 0, 12)
+    end
+}
+
+print("GENERATING BALANCED OBBY...")
+
+local TotalStages = 50 -- 50 Stages
+local JumpsPerStage = 5 -- 5 Jumps per stage = 250 Total Obstacles
+
+for stage = 1, TotalStages do
+    
+    -- 1. Generate 5 normal obstacles
+    for jump = 1, JumpsPerStage do
+        local gen = Generators[math.random(1, #Generators)]
+        CursorCF = gen(CursorCF)
+    end
+    
+    -- 2. Create the Checkpoint for this Stage
+    local cpSize = Vector3.new(16, 1, 16)
+    -- Place it 8 studs away from the last obstacle
+    local cp = CreatePart(CursorCF * CFrame.new(0, 0, 8), cpSize, "Neon orange", Enum.Material.Neon)
+    
+    -- When touched, update the Stage and Save the CFrame
+    cp.Touched:Connect(function(hit)
+        if hit.Parent.Name == LocalPlayer.Name and _G.CurrentStageNumber < stage then
+            _G.CurrentStageNumber = stage
+            StageLabel.Text = "STAGE: " .. stage
+            _G.LastCheckpointCFrame = cp.CFrame -- Saves direction!
+            cp.BrickColor = BrickColor.new("Lime green")
+        end
+    end)
+    
+    -- Move cursor to the middle of the Checkpoint
+    CursorCF = CursorCF * CFrame.new(0, 0, 8)
+    
+    -- 3. Check if we need to make a turn (Every 3 Stages = Every 15 Jumps)
+    if stage % 3 == 0 then
+        -- Pick left or right randomly
+        local turnAngle = (math.random() > 0.5) and 90 or -90
+        CursorCF = CursorCF * CFrame.Angles(0, math.rad(turnAngle), 0)
+    else
+        -- Add a tiny random upward slope if going straight
+        CursorCF = CursorCF * CFrame.new(0, math.random(0, 1), 0)
+    end
+    
+    -- Move cursor to the edge of the Checkpoint so the next jump doesn't clip into it
+    CursorCF = CursorCF * CFrame.new(0, 0, 8)
+    
+    task.wait() -- Prevent lag during generation
+end
+
+-- FINISH LINE
+local WinPad = CreatePart(CursorCF * CFrame.new(0, 0, 10), Vector3.new(40, 3, 40), "New Yeller", Enum.Material.Neon)
+WinPad.Touched:Connect(function(hit)
+    if hit.Parent.Name == LocalPlayer.Name then
+        _G.Wins += 5
+        WinLabel.Text = "WINS: " .. _G.Wins
+        _G.LastCheckpointCFrame = LobbyCF
+        LocalPlayer.Character.HumanoidRootPart.CFrame = LobbyCF * CFrame.new(0, 5, 0)
+        _G.CurrentStageNumber = 0
+        StageLabel.Text = "STAGE: 0"
+    end
+end)
+
+-- Initial Spawn logic
+LocalPlayer.CharacterAdded:Connect(function(char)
+    local hrp = char:WaitForChild("HumanoidRootPart")
+    task.wait(0.1)
+    hrp.CFrame = _G.LastCheckpointCFrame * CFrame.new(0, 4, 0)
+end)
+
+LocalPlayer.Character.HumanoidRootPart.CFrame = LobbyCF * CFrame.new(0, 4, 0)
+print("OBBY READY! HAVE FUN!")
